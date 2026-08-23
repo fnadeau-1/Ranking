@@ -1,0 +1,144 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // A "ranker" is anyone with a rankers/{uid} doc. The first ranker must be
+    // created by hand in the Firebase console (see README) — after that, existing
+    // rankers can promote others from the Rank Dashboard.
+    function isRanker() {
+      return request.auth != null
+        && exists(/databases/$(database)/documents/rankers/$(request.auth.uid));
+    }
+
+    // -------------------------------------------------------------------------
+    // Wrestler roster — managed exclusively by rankers.
+    // -------------------------------------------------------------------------
+    match /wrestlers/{wrestlerId} {
+      allow read: if true;
+
+      allow create: if isRanker()
+        && request.resource.data.name is string
+        && request.resource.data.name.size() > 0
+        && request.resource.data.name.size() <= 100
+        && request.resource.data.school is string
+        && request.resource.data.school.size() <= 100
+        && request.resource.data.weightClass is string
+        && request.resource.data.weightClass.size() <= 20
+        && request.resource.data.createdBy == request.auth.uid
+        && request.resource.data.createdAt == request.time
+        && request.resource.data.keys().hasOnly([
+            'name', 'school', 'weightClass', 'createdBy', 'createdAt'
+        ]);
+
+      allow update: if isRanker()
+        && request.resource.data.diff(resource.data).affectedKeys()
+            .hasOnly(['name', 'school', 'weightClass']);
+
+      allow delete: if isRanker();
+    }
+
+    // -------------------------------------------------------------------------
+    // Weeks — the ranker creates one per ranking cycle.
+    // -------------------------------------------------------------------------
+    match /weeks/{weekId} {
+      allow read: if true;
+
+      allow create: if isRanker()
+        && request.resource.data.label is string
+        && request.resource.data.label.size() > 0
+        && request.resource.data.label.size() <= 60
+        && request.resource.data.startDate is timestamp
+        && request.resource.data.createdBy == request.auth.uid
+        && request.resource.data.createdAt == request.time
+        && request.resource.data.keys().hasOnly([
+            'label', 'startDate', 'createdBy', 'createdAt'
+        ]);
+
+      allow update, delete: if isRanker();
+    }
+
+    // -------------------------------------------------------------------------
+    // Ranking lists — one per week + weight class, holding the ordered
+    // wrestler-id array the ranker builds via drag-and-drop. Unpublished
+    // (draft) lists are only visible to rankers; the public only ever sees
+    // published lists. Client queries for the public MUST filter
+    // where('published','==',true) for this rule to allow the list read.
+    // -------------------------------------------------------------------------
+    match /rankingLists/{listId} {
+      allow read: if resource.data.published == true || isRanker();
+
+      allow create, update: if isRanker()
+        && request.resource.data.weekId is string
+        && request.resource.data.weightClass is string
+        && request.resource.data.weightClass.size() > 0
+        && request.resource.data.weightClass.size() <= 20
+        && request.resource.data.order is list
+        && request.resource.data.published is bool
+        && request.resource.data.updatedBy == request.auth.uid
+        && request.resource.data.keys().hasOnly([
+            'weekId', 'weightClass', 'order', 'published',
+            'createdAt', 'updatedAt', 'updatedBy'
+        ]);
+
+      allow delete: if isRanker();
+    }
+
+    // -------------------------------------------------------------------------
+    // Votes — one doc per (list, user), enforced by the deterministic id, so a
+    // vote is a toggle rather than ballot-stuffing. Counts are public.
+    // -------------------------------------------------------------------------
+    match /votes/{voteId} {
+      allow read: if true;
+
+      allow create, update: if request.auth != null
+        && request.resource.data.userId == request.auth.uid
+        && voteId == request.resource.data.listId + '_' + request.auth.uid
+        && request.resource.data.value in ['agree', 'disagree']
+        && request.resource.data.createdAt == request.time
+        && request.resource.data.keys().hasOnly(['listId', 'userId', 'value', 'createdAt']);
+
+      allow delete: if request.auth != null && resource.data.userId == request.auth.uid;
+    }
+
+    // -------------------------------------------------------------------------
+    // Comments — public discussion thread per ranking list.
+    // -------------------------------------------------------------------------
+    match /comments/{commentId} {
+      allow read: if true;
+
+      allow create: if request.auth != null
+        && request.auth.token.email_verified == true
+        && request.resource.data.listId is string
+        && request.resource.data.userId == request.auth.uid
+        && request.resource.data.userName is string
+        && request.resource.data.userName.size() <= 60
+        && request.resource.data.text is string
+        && request.resource.data.text.size() > 0
+        && request.resource.data.text.size() <= 1000
+        && request.resource.data.createdAt == request.time
+        && request.resource.data.keys().hasOnly([
+            'listId', 'userId', 'userName', 'text', 'createdAt'
+        ]);
+
+      allow update: if false;
+      allow delete: if request.auth != null
+        && (resource.data.userId == request.auth.uid || isRanker());
+    }
+
+    // -------------------------------------------------------------------------
+    // Rankers — the first doc is bootstrapped by hand in the console; existing
+    // rankers can add or remove others from the Rank Dashboard.
+    // -------------------------------------------------------------------------
+    match /rankers/{uid} {
+      allow read: if request.auth != null && request.auth.uid == uid;
+
+      allow create, update: if isRanker()
+        && request.resource.data.addedBy == request.auth.uid
+        && request.resource.data.addedAt == request.time
+        && request.resource.data.keys().hasOnly(['addedAt', 'addedBy']);
+
+      allow delete: if isRanker();
+    }
+  }
+}

@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rank Dashboard | Montana Wrestling Rankings</title>
+    <link rel="icon" href="img/placeholder.svg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap">
+    <link rel="stylesheet" href="css/base.css">
+    <link rel="stylesheet" href="css/components.css">
+</head>
+<body>
+    <div class="top-bar">
+        <div class="top-bar-content">
+            <a class="brand" href="index.html">MT Wrestling Rankings</a>
+            <nav class="nav-links">
+                <a href="index.html">Rankings</a>
+                <a id="rank-link" href="rank.html" style="display:none">Rank Dashboard</a>
+                <span id="auth-slot"></span>
+            </nav>
+        </div>
+    </div>
+
+    <main class="container container-wide">
+        <h1>Rank Dashboard</h1>
+
+        <div id="not-ranker" class="empty" style="display:none;">
+            You need ranker access to use this page. Sign in, then ask an existing ranker to add your
+            account, or see the README to bootstrap the first ranker.
+        </div>
+
+        <div id="dashboard" style="display:none;">
+
+            <section class="panel">
+                <h2>Weeks</h2>
+                <ul class="simple-list" id="weeks-list"></ul>
+                <form id="new-week-form" class="inline-form">
+                    <input type="text" id="new-week-label" placeholder="Label, e.g. Week 4 - Jan 12" maxlength="60" required>
+                    <input type="date" id="new-week-date" required>
+                    <button class="btn btn-primary" type="submit">Add Week</button>
+                </form>
+                <p class="form-error" id="week-error"></p>
+            </section>
+
+            <section class="panel">
+                <h2>Build a Ranking</h2>
+                <div class="inline-form">
+                    <select id="builder-week-select"></select>
+                    <input type="text" id="builder-weight-class" placeholder="Weight class, e.g. 126" maxlength="20">
+                    <button class="btn btn-primary" type="button" id="load-list-btn">Load / Create</button>
+                </div>
+
+                <div id="builder-panel" style="display:none;">
+                    <div class="builder-toolbar">
+                        <label class="publish-toggle">
+                            <input type="checkbox" id="publish-toggle">
+                            Published (visible to the public)
+                        </label>
+                        <span id="save-indicator" class="save-indicator"></span>
+                    </div>
+
+                    <div class="builder-columns">
+                        <div class="builder-column">
+                            <h3>Ranked Order <span class="hint">drag to reorder</span></h3>
+                            <ul class="drag-list" id="order-list"></ul>
+                        </div>
+                        <div class="builder-column">
+                            <h3>Available Wrestlers</h3>
+                            <input type="text" id="available-search" placeholder="Search roster...">
+                            <ul class="drag-list" id="available-list"></ul>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="panel">
+                <h2>Roster</h2>
+                <form id="new-wrestler-form" class="inline-form">
+                    <input type="text" id="new-wrestler-name" placeholder="Wrestler name" maxlength="100" required>
+                    <input type="text" id="new-wrestler-school" placeholder="School" maxlength="100" required>
+                    <input type="text" id="new-wrestler-weight" placeholder="Weight class" maxlength="20" required>
+                    <button class="btn btn-primary" type="submit">Add Wrestler</button>
+                </form>
+                <p class="form-error" id="wrestler-error"></p>
+                <ul class="simple-list" id="roster-list"></ul>
+            </section>
+
+            <section class="panel">
+                <h2>Rankers</h2>
+                <p style="color:var(--color-muted);font-size:14px;">
+                    Add another trusted account as a ranker by their Firebase Auth UID
+                    (found in Firebase Console → Authentication → Users).
+                </p>
+                <form id="new-ranker-form" class="inline-form">
+                    <input type="text" id="new-ranker-uid" placeholder="User UID" required>
+                    <button class="btn btn-primary" type="submit">Add Ranker</button>
+                </form>
+                <p class="form-error" id="ranker-error"></p>
+            </section>
+
+        </div>
+    </main>
+
+    <script type="module" src="js/firebase-init.js"></script>
+    <script type="module" src="js/nav.js"></script>
+    <script type="module" src="js/rank-init.js"></script>
+</body>
+</html>

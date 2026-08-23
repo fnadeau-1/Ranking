@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Montana Wrestling Rankings</title>
+    <link rel="icon" href="img/placeholder.svg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap">
+    <link rel="stylesheet" href="css/base.css">
+    <link rel="stylesheet" href="css/components.css">
+</head>
+<body>
+    <div class="top-bar">
+        <div class="top-bar-content">
+            <a class="brand" href="index.html">MT Wrestling Rankings</a>
+            <nav class="nav-links">
+                <a href="index.html">Rankings</a>
+                <a id="rank-link" href="rank.html" style="display:none">Rank Dashboard</a>
+                <span id="auth-slot"></span>
+            </nav>
+        </div>
+    </div>
+
+    <main class="container">
+        <h1>Montana Wrestling Rankings</h1>
+
+        <div class="controls-row">
+            <div>
+                <label for="week-select">Week</label>
+                <select id="week-select"></select>
+            </div>
+        </div>
+
+        <div class="weight-tabs" id="weight-tabs"></div>
+
+        <div id="ranking-panel">
+            <ol class="ranking-list" id="ranking-list"></ol>
+            <div class="vote-widget" id="vote-widget"></div>
+        </div>
+
+        <section class="comments-section">
+            <h2>Comments</h2>
+            <div id="comments-list"></div>
+            <form id="comment-form" style="display:none;">
+                <textarea id="comment-text" maxlength="1000" placeholder="Share your take on this week's rankings..." required></textarea>
+                <button class="btn btn-primary" type="submit">Post comment</button>
+                <p class="form-error" id="comment-error"></p>
+            </form>
+            <p class="empty" id="comment-signin-prompt"><a href="sign-in.html?next=index.html">Sign in</a> to comment.</p>
+        </section>
+    </main>
+
+    <script type="module" src="js/firebase-init.js"></script>
+    <script type="module" src="js/nav.js"></script>
+    <script type="module" src="js/index-init.js"></script>
+</body>
+</html>

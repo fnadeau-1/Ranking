@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign In | Montana Wrestling Rankings</title>
+    <link rel="icon" href="img/placeholder.svg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap">
+    <link rel="stylesheet" href="css/base.css">
+    <link rel="stylesheet" href="css/components.css">
+</head>
+<body>
+    <div class="top-bar">
+        <div class="top-bar-content">
+            <a class="brand" href="index.html">MT Wrestling Rankings</a>
+            <nav class="nav-links">
+                <a href="index.html">Rankings</a>
+                <a id="rank-link" href="rank.html" style="display:none">Rank Dashboard</a>
+                <span id="auth-slot"></span>
+            </nav>
+        </div>
+    </div>
+
+    <main class="container">
+        <div class="form" style="text-align:center;">
+            <h1>Sign in</h1>
+            <p style="color:var(--color-muted)">Sign in with Google to vote and comment on the weekly rankings.</p>
+            <button class="btn btn-primary" id="google-sign-in" style="margin-top:12px;">Sign in with Google</button>
+            <p class="form-error" id="sign-in-error"></p>
+        </div>
+    </main>
+
+    <script type="module" src="js/firebase-init.js"></script>
+    <script type="module" src="js/nav.js"></script>
+    <script type="module" src="js/sign-in-init.js"></script>
+</body>
+</html>
