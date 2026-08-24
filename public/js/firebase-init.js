@@ -11,32 +11,31 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 import {getFunctions, httpsCallable} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-functions.js";
 
-// TODO: replace with your own Firebase project's config
-// (Firebase Console -> Project settings -> Your apps -> SDK setup and configuration).
-// This is a separate Firebase project from any other app you run — create a new
-// project at https://console.firebase.google.com, enable Authentication (Google
-// provider) and Firestore, then paste its config below and update .firebaserc.
 const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-  projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_PROJECT_ID.firebasestorage.app",
-  messagingSenderId: "YOUR_SENDER_ID",
-  appId: "YOUR_APP_ID",
+  apiKey: "AIzaSyCGTtswc13ZM9ym6NSwbnHPsJ1FBxznVYM",
+  authDomain: "rankings-d6214.firebaseapp.com",
+  projectId: "rankings-d6214",
+  storageBucket: "rankings-d6214.firebasestorage.app",
+  messagingSenderId: "389860482949",
+  appId: "1:389860482949:web:b7e135a8f16c6b02a0aeec",
 };
 
 // TODO: create a reCAPTCHA v3 site key at https://www.google.com/recaptcha/admin
 // and register it under Firebase Console -> App Check -> Apps -> (your web app).
-// Until you do, App Check calls fail closed and castVote/postComment will be
-// rejected — see README "App Check setup" for the exact steps.
+// Until you do, App Check is skipped below — castVote/postComment will still
+// reject requests without a token once you deploy functions with
+// enforceAppCheck, so voting/commenting won't work until this is set. See
+// README "App Check setup" for the exact steps.
 const APP_CHECK_SITE_KEY = "YOUR_RECAPTCHA_V3_SITE_KEY";
 
 const app = initializeApp(firebaseConfig);
 
-initializeAppCheck(app, {
-  provider: new ReCaptchaV3Provider(APP_CHECK_SITE_KEY),
-  isTokenAutoRefreshEnabled: true,
-});
+if (APP_CHECK_SITE_KEY !== "YOUR_RECAPTCHA_V3_SITE_KEY") {
+  initializeAppCheck(app, {
+    provider: new ReCaptchaV3Provider(APP_CHECK_SITE_KEY),
+    isTokenAutoRefreshEnabled: true,
+  });
+}
 
 const auth = getAuth(app);
 const db = getFirestore(app);
