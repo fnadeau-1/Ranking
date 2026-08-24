@@ -25,6 +25,7 @@
 
     <main class="container container-wide">
         <h1>Rank Dashboard</h1>
+        <p class="page-subtitle">Manage the roster, build each week's order, and publish it live.</p>
 
         <div id="not-ranker" class="empty" style="display:none;">
             You need ranker access to use this page. Sign in, then ask an existing ranker to add your
@@ -34,7 +35,10 @@
         <div id="dashboard" style="display:none;">
 
             <section class="panel">
-                <h2>Weeks</h2>
+                <div class="panel-header">
+                    <h2>1. Weeks</h2>
+                    <span class="panel-hint">Create a week before building a ranking for it</span>
+                </div>
                 <ul class="simple-list" id="weeks-list"></ul>
                 <form id="new-week-form" class="inline-form">
                     <input type="text" id="new-week-label" placeholder="Label, e.g. Week 4 - Jan 12" maxlength="60" required>
@@ -45,7 +49,25 @@
             </section>
 
             <section class="panel">
-                <h2>Build a Ranking</h2>
+                <div class="panel-header">
+                    <h2>2. Roster</h2>
+                    <span class="panel-hint">Wrestlers available to rank</span>
+                </div>
+                <form id="new-wrestler-form" class="inline-form">
+                    <input type="text" id="new-wrestler-name" placeholder="Wrestler name" maxlength="100" required>
+                    <input type="text" id="new-wrestler-school" placeholder="School" maxlength="100" required>
+                    <input type="text" id="new-wrestler-weight" placeholder="Weight class" maxlength="20" required>
+                    <button class="btn btn-primary" type="submit">Add Wrestler</button>
+                </form>
+                <p class="form-error" id="wrestler-error"></p>
+                <ul class="simple-list" id="roster-list"></ul>
+            </section>
+
+            <section class="panel">
+                <div class="panel-header">
+                    <h2>3. Build a Ranking</h2>
+                    <span class="panel-hint">Drag wrestlers into order, autosaves as you go</span>
+                </div>
                 <div class="inline-form">
                     <select id="builder-week-select"></select>
                     <input type="text" id="builder-weight-class" placeholder="Weight class, e.g. 126" maxlength="20">
@@ -76,20 +98,11 @@
             </section>
 
             <section class="panel">
-                <h2>Roster</h2>
-                <form id="new-wrestler-form" class="inline-form">
-                    <input type="text" id="new-wrestler-name" placeholder="Wrestler name" maxlength="100" required>
-                    <input type="text" id="new-wrestler-school" placeholder="School" maxlength="100" required>
-                    <input type="text" id="new-wrestler-weight" placeholder="Weight class" maxlength="20" required>
-                    <button class="btn btn-primary" type="submit">Add Wrestler</button>
-                </form>
-                <p class="form-error" id="wrestler-error"></p>
-                <ul class="simple-list" id="roster-list"></ul>
-            </section>
-
-            <section class="panel">
-                <h2>Rankers</h2>
-                <p style="color:var(--color-muted);font-size:14px;">
+                <div class="panel-header">
+                    <h2>Rankers</h2>
+                    <span class="panel-hint">Who else can manage rankings</span>
+                </div>
+                <p class="panel-note">
                     Add another trusted account as a ranker by their Firebase Auth UID
                     (found in Firebase Console → Authentication → Users).
                 </p>
