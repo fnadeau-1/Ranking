@@ -5,7 +5,8 @@
     "ignore": [
       "firebase.json",
       "**/.*",
-      "**/node_modules/**"
+      "**/node_modules/**",
+      "functions/**"
     ],
     "headers": [
       {
@@ -16,7 +17,7 @@
           {"key": "Referrer-Policy", "value": "strict-origin-when-cross-origin"},
           {"key": "Strict-Transport-Security", "value": "max-age=63072000; includeSubDomains; preload"},
           {"key": "Permissions-Policy", "value": "geolocation=(), microphone=(), camera=()"},
-          {"key": "Content-Security-Policy", "value": "default-src 'self'; script-src 'self' https://www.gstatic.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://firestore.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://www.googleapis.com; frame-src https://accounts.google.com; object-src 'none'; base-uri 'self'; frame-ancestors 'self';"}
+          {"key": "Content-Security-Policy", "value": "default-src 'self'; script-src 'self' https://www.gstatic.com https://www.google.com https://www.recaptcha.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://firestore.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://www.googleapis.com https://*.cloudfunctions.net https://*.run.app https://firebaseappcheck.googleapis.com https://content-firebaseappcheck.googleapis.com https://www.google.com; frame-src https://accounts.google.com https://www.google.com https://recaptcha.google.com; object-src 'none'; base-uri 'self'; frame-ancestors 'self';"}
         ]
       },
       {
@@ -33,6 +34,19 @@
       }
     ]
   },
+  "functions": [
+    {
+      "codebase": "ranking",
+      "source": "functions",
+      "ignore": [
+        "node_modules",
+        ".git",
+        "firebase-debug.log",
+        "firebase-debug.*.log",
+        "*.local"
+      ]
+    }
+  ],
   "firestore": {
     "database": "(default)",
     "location": "nam5",
@@ -41,6 +55,7 @@
   },
   "emulators": {
     "hosting": {"port": 5000},
+    "functions": {"port": 5001},
     "firestore": {"port": 8080},
     "ui": {"enabled": true},
     "singleProjectMode": true

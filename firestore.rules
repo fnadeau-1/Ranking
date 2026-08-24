@@ -85,43 +85,24 @@ service cloud.firestore {
     }
 
     // -------------------------------------------------------------------------
-    // Votes — one doc per (list, user), enforced by the deterministic id, so a
-    // vote is a toggle rather than ballot-stuffing. Counts are public.
+    // Votes — written ONLY by the castVote Cloud Function (Admin SDK, which
+    // bypasses these rules entirely). Direct client writes are denied so the
+    // per-user rate limit and the "list must be published" check in that
+    // function can't be skipped by a modified client. Counts are public.
     // -------------------------------------------------------------------------
     match /votes/{voteId} {
       allow read: if true;
-
-      allow create, update: if request.auth != null
-        && request.resource.data.userId == request.auth.uid
-        && voteId == request.resource.data.listId + '_' + request.auth.uid
-        && request.resource.data.value in ['agree', 'disagree']
-        && request.resource.data.createdAt == request.time
-        && request.resource.data.keys().hasOnly(['listId', 'userId', 'value', 'createdAt']);
-
-      allow delete: if request.auth != null && resource.data.userId == request.auth.uid;
+      allow write: if false;
     }
 
     // -------------------------------------------------------------------------
-    // Comments — public discussion thread per ranking list.
+    // Comments — written ONLY by the postComment Cloud Function, for the same
+    // reason as votes: rate limiting and length/email-verification checks are
+    // only trustworthy if the client can't write around them.
     // -------------------------------------------------------------------------
     match /comments/{commentId} {
       allow read: if true;
-
-      allow create: if request.auth != null
-        && request.auth.token.email_verified == true
-        && request.resource.data.listId is string
-        && request.resource.data.userId == request.auth.uid
-        && request.resource.data.userName is string
-        && request.resource.data.userName.size() <= 60
-        && request.resource.data.text is string
-        && request.resource.data.text.size() > 0
-        && request.resource.data.text.size() <= 1000
-        && request.resource.data.createdAt == request.time
-        && request.resource.data.keys().hasOnly([
-            'listId', 'userId', 'userName', 'text', 'createdAt'
-        ]);
-
-      allow update: if false;
+      allow create, update: if false;
       allow delete: if request.auth != null
         && (resource.data.userId == request.auth.uid || isRanker());
     }
@@ -139,6 +120,15 @@ service cloud.firestore {
         && request.resource.data.keys().hasOnly(['addedAt', 'addedBy']);
 
       allow delete: if isRanker();
+    }
+
+    // -------------------------------------------------------------------------
+    // Rate-limit counters for votes/comments — Admin SDK only (Cloud Functions).
+    // No client rule matches "read" or "write" here, so both are denied by
+    // Firestore's default-deny; this block exists just to document that.
+    // -------------------------------------------------------------------------
+    match /rateLimits/{uid} {
+      allow read, write: if false;
     }
   }
 }

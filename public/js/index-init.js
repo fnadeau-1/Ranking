@@ -1,9 +1,12 @@
 import {escapeHtml, formatDateTime} from "./util.js";
 
 const {
-  auth, db, collection, doc, setDoc, addDoc, onSnapshot,
-  query, where, orderBy, serverTimestamp, onAuthStateChanged,
+  auth, db, collection, doc, onSnapshot,
+  query, where, orderBy, onAuthStateChanged, httpsCallable, functions,
 } = window.rankingApp;
+
+const castVoteFn = httpsCallable(functions, "castVote");
+const postCommentFn = httpsCallable(functions, "postComment");
 
 const weekSelect = document.getElementById("week-select");
 const weightTabsEl = document.getElementById("weight-tabs");
@@ -161,6 +164,7 @@ function renderVoteWidget(snap) {
       <button class="vote-btn${myVote === "agree" ? " active-agree" : ""}" data-value="agree">Agree (${agree})</button>
       <button class="vote-btn${myVote === "disagree" ? " active-disagree" : ""}" data-value="disagree">Disagree (${disagree})</button>
     </div>
+    <p class="form-error" id="vote-error"></p>
   `;
   voteWidgetEl.querySelectorAll(".vote-btn").forEach((btn) => {
     btn.addEventListener("click", () => castVote(btn.dataset.value));
@@ -172,13 +176,11 @@ async function castVote(value) {
     window.location.href = "sign-in.html?next=index.html";
     return;
   }
-  const voteId = `${currentListId}_${auth.currentUser.uid}`;
-  await setDoc(doc(db, "votes", voteId), {
-    listId: currentListId,
-    userId: auth.currentUser.uid,
-    value,
-    createdAt: serverTimestamp(),
-  });
+  try {
+    await castVoteFn({listId: currentListId, value});
+  } catch (err) {
+    document.getElementById("vote-error").textContent = err.message || "Vote failed. Try again.";
+  }
 }
 
 function renderComments(snap) {
@@ -202,13 +204,7 @@ commentForm.addEventListener("submit", async (e) => {
   const text = commentText.value.trim();
   if (!text) return;
   try {
-    await addDoc(collection(db, "comments"), {
-      listId: currentListId,
-      userId: auth.currentUser.uid,
-      userName: auth.currentUser.displayName || auth.currentUser.email || "Fan",
-      text,
-      createdAt: serverTimestamp(),
-    });
+    await postCommentFn({listId: currentListId, text});
     commentText.value = "";
   } catch (err) {
     commentError.textContent = err.message || "Couldn't post comment. Please try again.";
