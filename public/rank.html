@@ -12,16 +12,24 @@
     <link rel="stylesheet" href="css/components.css">
 </head>
 <body>
-    <div class="top-bar">
+    <header class="top-bar">
         <div class="top-bar-content">
-            <a class="brand" href="index.html">MT Wrestling Rankings</a>
-            <nav class="nav-links">
-                <a href="index.html">Rankings</a>
-                <a id="rank-link" href="rank.html" style="display:none">Rank Dashboard</a>
+            <a class="brand" href="/">
+                <span class="brand-mark">MT</span>
+                <span class="brand-text">Montana Wrestling Rankings</span>
+            </a>
+            <button class="nav-toggle" id="nav-toggle" aria-label="Toggle menu" aria-expanded="false">&#9776;</button>
+            <nav class="nav-links" id="nav-links">
+                <a href="/">Home</a>
+                <a href="rankings">Rankings</a>
+                <a href="how-it-works">How It Works</a>
+                <a href="about">About</a>
+                <a href="archive">Archive</a>
+                <a id="rank-link" href="rank" class="active" style="display:none">Dashboard</a>
                 <span id="auth-slot"></span>
             </nav>
         </div>
-    </div>
+    </header>
 
     <main class="container container-wide">
         <h1>Rank Dashboard</h1>
@@ -115,6 +123,21 @@
 
         </div>
     </main>
+
+    <footer class="site-footer">
+        <div class="site-footer-inner">
+            <nav class="footer-nav">
+                <a href="/">Home</a>
+                <a href="rankings">Rankings</a>
+                <a href="how-it-works">How It Works</a>
+                <a href="about">About</a>
+                <a href="archive">Archive</a>
+            </nav>
+            <a class="powered-by" href="https://grappletrade.com" target="_blank" rel="noopener">
+                Powered by <strong>GrappleTrade.LLC</strong>
+            </a>
+        </div>
+    </footer>
 
     <script type="module" src="js/firebase-init.js"></script>
     <script type="module" src="js/nav.js"></script>

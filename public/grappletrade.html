@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GrappleTrade | Montana Wrestling Rankings</title>
+    <link rel="icon" href="img/placeholder.svg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap">
+    <link rel="stylesheet" href="css/base.css">
+    <link rel="stylesheet" href="css/components.css">
+</head>
+<body>
+    <header class="top-bar">
+        <div class="top-bar-content">
+            <a class="brand" href="/">
+                <span class="brand-mark">MT</span>
+                <span class="brand-text">Montana Wrestling Rankings</span>
+            </a>
+            <button class="nav-toggle" id="nav-toggle" aria-label="Toggle menu" aria-expanded="false">&#9776;</button>
+            <nav class="nav-links" id="nav-links">
+                <a href="/">Home</a>
+                <a href="rankings">Rankings</a>
+                <a href="how-it-works">How It Works</a>
+                <a href="about">About</a>
+                <a href="archive">Archive</a>
+                <a id="rank-link" href="rank" style="display:none">Dashboard</a>
+                <span id="auth-slot"></span>
+            </nav>
+        </div>
+    </header>
+
+    <section class="hero">
+        <div class="hero-inner">
+            <span class="hero-eyebrow">Our sponsor</span>
+            <h1 class="hero-title">GrappleTrade.LLC</h1>
+            <p class="hero-sub">
+                Montana Wrestling Rankings is powered by GrappleTrade — built for wrestlers,
+                by wrestling people. Keeping these weekly rankings free and live for the community.
+            </p>
+            <div class="cta-row">
+                <a class="btn btn-accent btn-lg" href="https://grappletrade.com" target="_blank" rel="noopener">Visit GrappleTrade.com</a>
+            </div>
+        </div>
+    </section>
+
+    <main class="container section">
+        <div class="section-head">
+            <span class="eyebrow">Why GrappleTrade backs this</span>
+            <h2>Good rankings grow the sport.</h2>
+            <p>The more fans, families, and athletes are talking about Montana wrestling, the better it is for everyone in it.</p>
+        </div>
+
+        <div class="feature-grid">
+            <div class="card">
+                <div class="card-icon">🤼</div>
+                <h3>For the wrestling community</h3>
+                <p>GrappleTrade supports the mats, the athletes, and the people who follow the sport all season long.</p>
+            </div>
+            <div class="card">
+                <div class="card-icon">🆓</div>
+                <h3>Free for fans</h3>
+                <p>Their sponsorship keeps this site free to read and free to join — no paywalls on the rankings.</p>
+            </div>
+            <div class="card">
+                <div class="card-icon">🔗</div>
+                <h3>Learn more</h3>
+                <p>Check out what GrappleTrade is about and what they've got going on over at their site.</p>
+            </div>
+        </div>
+
+        <div class="cta-row" style="justify-content:center; margin-top:var(--space-7);">
+            <a class="btn btn-primary btn-lg" href="https://grappletrade.com" target="_blank" rel="noopener">Go to GrappleTrade.com</a>
+            <a class="btn btn-ghost btn-lg" href="rankings">Back to rankings</a>
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        <div class="site-footer-inner">
+            <nav class="footer-nav">
+                <a href="/">Home</a>
+                <a href="rankings">Rankings</a>
+                <a href="how-it-works">How It Works</a>
+                <a href="about">About</a>
+                <a href="archive">Archive</a>
+            </nav>
+            <a class="powered-by" href="https://grappletrade.com" target="_blank" rel="noopener">
+                Powered by <strong>GrappleTrade.LLC</strong>
+            </a>
+        </div>
+    </footer>
+
+    <script type="module" src="js/firebase-init.js"></script>
+    <script type="module" src="js/nav.js"></script>
+</body>
+</html>

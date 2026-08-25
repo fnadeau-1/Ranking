@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About | Montana Wrestling Rankings</title>
+    <link rel="icon" href="img/placeholder.svg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap">
+    <link rel="stylesheet" href="css/base.css">
+    <link rel="stylesheet" href="css/components.css">
+</head>
+<body>
+    <header class="top-bar">
+        <div class="top-bar-content">
+            <a class="brand" href="/">
+                <span class="brand-mark">MT</span>
+                <span class="brand-text">Montana Wrestling Rankings</span>
+            </a>
+            <button class="nav-toggle" id="nav-toggle" aria-label="Toggle menu" aria-expanded="false">&#9776;</button>
+            <nav class="nav-links" id="nav-links">
+                <a href="/">Home</a>
+                <a href="rankings">Rankings</a>
+                <a href="how-it-works">How It Works</a>
+                <a href="about" class="active">About</a>
+                <a href="archive">Archive</a>
+                <a id="rank-link" href="rank" style="display:none">Dashboard</a>
+                <span id="auth-slot"></span>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="page-head">
+            <span class="eyebrow">About</span>
+            <h1>Rankings that belong to the wrestling community.</h1>
+        </div>
+
+        <div class="prose" style="max-width:64ch;">
+            <p>Montana Wrestling Rankings is a weekly, community-driven take on high school wrestling across the state. A trusted ranker sets each week's order by weight class — and then the community gets a real say.</p>
+            <p>Most ranking sites hand you a list and move on. Here, you push back: agree or disagree, drag out your own order, and watch everyone's picks average into a live People's Ranking that sits right next to the ranker's. It's the debate the wrestling room already has, made public and kept honest.</p>
+            <p>Anyone can read every ranking, current or past. Signing in with Google unlocks voting, commenting, and saving your own rankings.</p>
+        </div>
+
+        <div class="feature-grid" style="margin-top:var(--space-7);">
+            <div class="card">
+                <div class="card-icon">⚖️</div>
+                <h3>Fair by design</h3>
+                <p>Votes, comments, and fan rankings are all validated on the server — no stuffing the ballot, no faking the consensus.</p>
+            </div>
+            <div class="card">
+                <div class="card-icon">🔄</div>
+                <h3>Live every week</h3>
+                <p>New week, new board. Everything updates in real time as the ranker publishes and fans weigh in.</p>
+            </div>
+            <div class="card">
+                <div class="card-icon">🥇</div>
+                <h3>For the sport</h3>
+                <p>Built to celebrate Montana wrestlers and give fans, families, and athletes a place to argue it out.</p>
+            </div>
+        </div>
+
+        <section class="card" style="margin-top:var(--space-7); text-align:center;">
+            <span class="eyebrow">Powered by</span>
+            <h2 style="margin-bottom:var(--space-2);">GrappleTrade.LLC</h2>
+            <p style="max-width:52ch; margin:0 auto var(--space-4); color:var(--color-muted);">
+                This site is brought to you by GrappleTrade — for wrestlers, by wrestling people. Gear up and learn more over on their site.
+            </p>
+            <a class="btn btn-accent btn-lg" href="https://grappletrade.com" target="_blank" rel="noopener">Visit GrappleTrade.com</a>
+        </section>
+    </main>
+
+    <footer class="site-footer">
+        <div class="site-footer-inner">
+            <nav class="footer-nav">
+                <a href="/">Home</a>
+                <a href="rankings">Rankings</a>
+                <a href="how-it-works">How It Works</a>
+                <a href="about">About</a>
+                <a href="archive">Archive</a>
+            </nav>
+            <a class="powered-by" href="https://grappletrade.com" target="_blank" rel="noopener">
+                Powered by <strong>GrappleTrade.LLC</strong>
+            </a>
+        </div>
+    </footer>
+
+    <script type="module" src="js/firebase-init.js"></script>
+    <script type="module" src="js/nav.js"></script>
+</body>
+</html>

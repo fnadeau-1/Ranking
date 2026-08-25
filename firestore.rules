@@ -123,11 +123,32 @@ service cloud.firestore {
     }
 
     // -------------------------------------------------------------------------
+    // User rankings — a fan's own reordering of a published list, written ONLY
+    // by the submitUserRanking Cloud Function (Admin SDK). Direct client writes
+    // are denied so the "must be a permutation of the published order" check and
+    // the rate limit in that function can't be skipped by a modified client.
+    // Reads are public so anyone can compute the aggregated People's Ranking.
+    // -------------------------------------------------------------------------
+    match /userRankings/{rankingId} {
+      allow read: if true;
+      allow write: if false;
+    }
+
+    // -------------------------------------------------------------------------
     // Rate-limit counters for votes/comments — Admin SDK only (Cloud Functions).
     // No client rule matches "read" or "write" here, so both are denied by
     // Firestore's default-deny; this block exists just to document that.
     // -------------------------------------------------------------------------
     match /rateLimits/{uid} {
+      allow read, write: if false;
+    }
+
+    // -------------------------------------------------------------------------
+    // Per-week, per-user comment counters that back the "10 comments per week's
+    // ranking" cap — written only by the postComment Cloud Function (Admin SDK).
+    // Denied to all clients so the cap can't be reset or forged.
+    // -------------------------------------------------------------------------
+    match /commentCounts/{id} {
       allow read, write: if false;
     }
   }

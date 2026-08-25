@@ -12,47 +12,117 @@
     <link rel="stylesheet" href="css/components.css">
 </head>
 <body>
-    <div class="top-bar">
+    <header class="top-bar">
         <div class="top-bar-content">
-            <a class="brand" href="index.html">MT Wrestling Rankings</a>
-            <nav class="nav-links">
-                <a href="index.html">Rankings</a>
-                <a id="rank-link" href="rank.html" style="display:none">Rank Dashboard</a>
+            <a class="brand" href="/">
+                <span class="brand-mark">MT</span>
+                <span class="brand-text">Montana Wrestling Rankings</span>
+            </a>
+            <button class="nav-toggle" id="nav-toggle" aria-label="Toggle menu" aria-expanded="false">&#9776;</button>
+            <nav class="nav-links" id="nav-links">
+                <a href="/" class="active">Home</a>
+                <a href="rankings">Rankings</a>
+                <a href="how-it-works">How It Works</a>
+                <a href="about">About</a>
+                <a href="archive">Archive</a>
+                <a id="rank-link" href="rank" style="display:none">Dashboard</a>
                 <span id="auth-slot"></span>
             </nav>
         </div>
-    </div>
+    </header>
 
-    <main class="container">
-        <h1>Montana Wrestling Rankings</h1>
-        <p class="page-subtitle">Weekly rankings by weight class. Vote and comment on how it looks.</p>
-
-        <div class="controls-row">
-            <label for="week-select">Week</label>
-            <select id="week-select"></select>
+    <section class="hero">
+        <div class="hero-inner">
+            <span class="hero-eyebrow">Montana high school wrestling</span>
+            <h1 class="hero-title">The rankings the mat actually argues about.</h1>
+            <p class="hero-sub">
+                Every week a ranker sets the board by weight class. You agree, disagree,
+                build your own order, and the crowd's picks roll up into a live People's Ranking.
+            </p>
+            <div class="cta-row">
+                <a class="btn btn-accent btn-lg" href="rankings">See this week's rankings</a>
+                <a class="btn btn-ghost-light btn-lg" href="how-it-works">How it works</a>
+            </div>
         </div>
+    </section>
 
-        <div class="weight-tabs" id="weight-tabs"></div>
+    <main>
+        <section class="container section" id="this-week">
+            <div class="section-head">
+                <span class="eyebrow">This week</span>
+                <h2 id="this-week-title">Loading the latest ranking…</h2>
+                <p id="this-week-sub">The newest published weight class, straight from the board.</p>
+            </div>
+            <ol class="ranking-list" id="this-week-list">
+                <li class="empty">Loading…</li>
+            </ol>
+            <div class="cta-row">
+                <a class="btn btn-primary" href="rankings">Open full rankings</a>
+                <a class="btn btn-ghost" href="archive">Browse past weeks</a>
+            </div>
+        </section>
 
-        <div id="ranking-panel">
-            <ol class="ranking-list" id="ranking-list"></ol>
-            <div class="vote-widget" id="vote-widget"></div>
-        </div>
+        <section class="surface-band">
+            <div class="container section">
+                <div class="section-head">
+                    <span class="eyebrow">Why it's fun</span>
+                    <h2>Not just a list — an argument you can join.</h2>
+                    <p>Four ways to get off the sidelines and into the rankings.</p>
+                </div>
+                <div class="feature-grid">
+                    <div class="card">
+                        <div class="card-icon">🏆</div>
+                        <h3>The ranker's board</h3>
+                        <p>Each week, one ranker sets the official order for every weight class. Clear, accountable, updated live.</p>
+                    </div>
+                    <div class="card">
+                        <div class="card-icon">👍</div>
+                        <h3>Agree or disagree</h3>
+                        <p>One tap to back the board or push back. The running tally is public for everyone to see.</p>
+                    </div>
+                    <div class="card">
+                        <div class="card-icon">✍️</div>
+                        <h3>Build your own</h3>
+                        <p>Drag the same wrestlers into the order you'd run. No adding names — just your call on who's better.</p>
+                    </div>
+                    <div class="card">
+                        <div class="card-icon">📊</div>
+                        <h3>The People's Ranking</h3>
+                        <p>Everyone's picks average into a live consensus, with arrows showing where the crowd moved each wrestler.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
 
-        <section class="comments-section">
-            <h2>Comments</h2>
-            <div id="comments-list"></div>
-            <form id="comment-form" style="display:none;">
-                <textarea id="comment-text" maxlength="1000" placeholder="Share your take on this week's rankings..." required></textarea>
-                <button class="btn btn-primary" type="submit">Post comment</button>
-                <p class="form-error" id="comment-error"></p>
-            </form>
-            <p class="empty" id="comment-signin-prompt"><a href="sign-in.html?next=index.html">Sign in</a> to comment.</p>
+        <section class="container section">
+            <div class="section-head">
+                <h2>Ready to weigh in?</h2>
+                <p>Sign in with Google to vote, comment, and save your rankings. Reading is always open to everyone.</p>
+            </div>
+            <div class="cta-row" style="justify-content:center;">
+                <a class="btn btn-primary btn-lg" href="rankings">Go to rankings</a>
+                <a class="btn btn-ghost btn-lg" href="about">About this site</a>
+            </div>
         </section>
     </main>
 
+    <footer class="site-footer">
+        <div class="site-footer-inner">
+            <nav class="footer-nav">
+                <a href="/">Home</a>
+                <a href="rankings">Rankings</a>
+                <a href="how-it-works">How It Works</a>
+                <a href="about">About</a>
+                <a href="archive">Archive</a>
+            </nav>
+            <a class="powered-by" href="https://grappletrade.com" target="_blank" rel="noopener">
+                Powered by <strong>GrappleTrade.LLC</strong>
+            </a>
+        </div>
+    </footer>
+
     <script type="module" src="js/firebase-init.js"></script>
     <script type="module" src="js/nav.js"></script>
-    <script type="module" src="js/index-init.js"></script>
+    <script type="module" src="js/home-init.js"></script>
 </body>
 </html>

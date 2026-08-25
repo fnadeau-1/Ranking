@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How It Works | Montana Wrestling Rankings</title>
+    <link rel="icon" href="img/placeholder.svg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap">
+    <link rel="stylesheet" href="css/base.css">
+    <link rel="stylesheet" href="css/components.css">
+</head>
+<body>
+    <header class="top-bar">
+        <div class="top-bar-content">
+            <a class="brand" href="/">
+                <span class="brand-mark">MT</span>
+                <span class="brand-text">Montana Wrestling Rankings</span>
+            </a>
+            <button class="nav-toggle" id="nav-toggle" aria-label="Toggle menu" aria-expanded="false">&#9776;</button>
+            <nav class="nav-links" id="nav-links">
+                <a href="/">Home</a>
+                <a href="rankings">Rankings</a>
+                <a href="how-it-works" class="active">How It Works</a>
+                <a href="about">About</a>
+                <a href="archive">Archive</a>
+                <a id="rank-link" href="rank" style="display:none">Dashboard</a>
+                <span id="auth-slot"></span>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="page-head">
+            <span class="eyebrow">The rundown</span>
+            <h1>How it works</h1>
+            <p class="page-subtitle">Reading the rankings is open to everyone. To vote, comment, or build your own ranking, you sign in with Google — that's it.</p>
+        </div>
+
+        <div class="steps">
+            <div class="step">
+                <span class="step-num">1</span>
+                <div>
+                    <h3>The ranker sets the board</h3>
+                    <p>Each week, the ranker publishes an ordered list for every weight class. That's the official ranking — the starting point for the whole conversation.</p>
+                </div>
+            </div>
+            <div class="step">
+                <span class="step-num">2</span>
+                <div>
+                    <h3>You agree or disagree</h3>
+                    <p>One tap registers whether you back the board or not. The agree/disagree tally is public and updates live as votes come in.</p>
+                </div>
+            </div>
+            <div class="step">
+                <span class="step-num">3</span>
+                <div>
+                    <h3>You build your own ranking</h3>
+                    <p>Drag the exact same wrestlers into the order you'd run. You can't add or remove anyone — it's purely your call on who beats who.</p>
+                </div>
+            </div>
+            <div class="step">
+                <span class="step-num">4</span>
+                <div>
+                    <h3>The People's Ranking forms</h3>
+                    <p>Every saved fan ranking averages together into a live consensus. Flip the toggle on any ranking to see it, complete with arrows showing how far the crowd moved each wrestler from the ranker's spot.</p>
+                </div>
+            </div>
+            <div class="step">
+                <span class="step-num">5</span>
+                <div>
+                    <h3>You talk it out</h3>
+                    <p>Comments are open on the current week's ranking — up to 10 per person, per week, to keep it real. Past weeks stay fully readable but their threads are closed.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="section-head" style="margin-top:var(--space-8);">
+            <h2>Jump in</h2>
+            <p>The board's already up. Go make your case.</p>
+        </div>
+        <div class="cta-row" style="justify-content:center;">
+            <a class="btn btn-primary btn-lg" href="rankings">Go to rankings</a>
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        <div class="site-footer-inner">
+            <nav class="footer-nav">
+                <a href="/">Home</a>
+                <a href="rankings">Rankings</a>
+                <a href="how-it-works">How It Works</a>
+                <a href="about">About</a>
+                <a href="archive">Archive</a>
+            </nav>
+            <a class="powered-by" href="https://grappletrade.com" target="_blank" rel="noopener">
+                Powered by <strong>GrappleTrade.LLC</strong>
+            </a>
+        </div>
+    </footer>
+
+    <script type="module" src="js/firebase-init.js"></script>
+    <script type="module" src="js/nav.js"></script>
+</body>
+</html>

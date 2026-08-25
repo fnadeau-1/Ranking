@@ -2,7 +2,7 @@ const {auth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged} = window.r
 
 function nextUrl() {
   const params = new URLSearchParams(window.location.search);
-  return params.get("next") || "index.html";
+  return params.get("next") || "rankings";
 }
 
 document.getElementById("google-sign-in").addEventListener("click", async () => {

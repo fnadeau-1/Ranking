@@ -23,7 +23,10 @@
   --space-4: 16px;
   --space-5: 24px;
   --space-6: 32px;
+  --space-7: 48px;
+  --space-8: 72px;
   --font-sans: "DM Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --maxw: 960px;
 }
 
 * {
@@ -53,22 +56,28 @@ a:hover {
 }
 
 .container {
-  max-width: 820px;
+  max-width: var(--maxw);
   margin: 0 auto;
-  padding: var(--space-6) var(--space-4) 72px;
+  padding: var(--space-7) var(--space-5) var(--space-8);
+}
+
+.page-head {
+  margin-bottom: var(--space-6);
 }
 
 h1 {
-  margin: 0 0 var(--space-1);
-  font-size: 26px;
+  margin: 0 0 var(--space-2);
+  font-size: 30px;
   font-weight: 800;
-  letter-spacing: -0.01em;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
 }
 
 h2 {
   margin: 0 0 var(--space-4);
-  font-size: 18px;
-  font-weight: 700;
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: -0.01em;
 }
 
 h3 {
@@ -78,9 +87,30 @@ h3 {
 }
 
 .page-subtitle {
-  margin: 0 0 var(--space-5);
+  margin: 0 0 var(--space-6);
   color: var(--color-muted);
-  font-size: 15px;
+  font-size: 16px;
+  max-width: 60ch;
+}
+
+/* Generic content prose spacing for the static pages. */
+.prose p {
+  margin: 0 0 var(--space-4);
+  font-size: 15.5px;
+}
+
+.prose p:last-child {
+  margin-bottom: 0;
+}
+
+.eyebrow {
+  display: inline-block;
+  margin-bottom: var(--space-3);
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-accent-ink);
 }
 
 .loading, .empty {
