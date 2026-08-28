@@ -8,6 +8,7 @@ import {
 import {
   getFirestore, collection, doc, addDoc, setDoc, updateDoc, deleteDoc,
   getDoc, getDocs, onSnapshot, query, where, orderBy, limit, serverTimestamp,
+  deleteField,
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 import {getFunctions, httpsCallable} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-functions.js";
 
@@ -63,5 +64,6 @@ window.rankingApp = {
   orderBy,
   limit,
   serverTimestamp,
+  deleteField,
   httpsCallable,
 };

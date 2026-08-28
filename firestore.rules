@@ -11,6 +11,14 @@ service cloud.firestore {
         && exists(/databases/$(database)/documents/rankers/$(request.auth.uid));
     }
 
+    // An optional string field: either absent, or a string within maxLen. Used
+    // for the customizable roster fields (grade/record/hometown/notes) so a
+    // wrestler doc can carry them but isn't required to.
+    function okOptStr(data, field, maxLen) {
+      return !data.keys().hasAny([field])
+        || (data[field] is string && data[field].size() <= maxLen);
+    }
+
     // -------------------------------------------------------------------------
     // Wrestler roster — managed exclusively by rankers.
     // -------------------------------------------------------------------------
@@ -25,15 +33,26 @@ service cloud.firestore {
         && request.resource.data.school.size() <= 100
         && request.resource.data.weightClass is string
         && request.resource.data.weightClass.size() <= 20
+        && okOptStr(request.resource.data, 'grade', 20)
+        && okOptStr(request.resource.data, 'record', 20)
+        && okOptStr(request.resource.data, 'hometown', 100)
+        && okOptStr(request.resource.data, 'notes', 300)
         && request.resource.data.createdBy == request.auth.uid
         && request.resource.data.createdAt == request.time
         && request.resource.data.keys().hasOnly([
-            'name', 'school', 'weightClass', 'createdBy', 'createdAt'
+            'name', 'school', 'weightClass',
+            'grade', 'record', 'hometown', 'notes',
+            'createdBy', 'createdAt'
         ]);
 
       allow update: if isRanker()
         && request.resource.data.diff(resource.data).affectedKeys()
-            .hasOnly(['name', 'school', 'weightClass']);
+            .hasOnly(['name', 'school', 'weightClass',
+                      'grade', 'record', 'hometown', 'notes'])
+        && okOptStr(request.resource.data, 'grade', 20)
+        && okOptStr(request.resource.data, 'record', 20)
+        && okOptStr(request.resource.data, 'hometown', 100)
+        && okOptStr(request.resource.data, 'notes', 300);
 
       allow delete: if isRanker();
     }
@@ -68,7 +87,7 @@ service cloud.firestore {
     match /rankingLists/{listId} {
       allow read: if resource.data.published == true || isRanker();
 
-      allow create, update: if isRanker()
+      allow create: if isRanker()
         && request.resource.data.weekId is string
         && request.resource.data.weightClass is string
         && request.resource.data.weightClass.size() > 0
@@ -80,6 +99,20 @@ service cloud.firestore {
             'weekId', 'weightClass', 'order', 'published',
             'createdAt', 'updatedAt', 'updatedBy'
         ]);
+
+      // Update pins the immutable provenance fields (weekId/weightClass/
+      // createdAt) so a published list can't be silently repointed to a
+      // different week or weight class, and limits edits to the mutable
+      // set (order/published/updatedAt/updatedBy). createdBy is not part of
+      // this collection's schema, so it is not referenced here.
+      allow update: if isRanker()
+        && request.resource.data.weekId == resource.data.weekId
+        && request.resource.data.weightClass == resource.data.weightClass
+        && request.resource.data.createdAt == resource.data.createdAt
+        && request.resource.data.order is list
+        && request.resource.data.published is bool
+        && request.resource.data.diff(resource.data).affectedKeys()
+            .hasOnly(['order', 'published', 'updatedAt', 'updatedBy']);
 
       allow delete: if isRanker();
     }

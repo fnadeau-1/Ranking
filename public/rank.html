@@ -12,6 +12,9 @@
     <link rel="stylesheet" href="css/components.css">
 </head>
 <body>
+    <a class="promo-strip" href="https://grappletrade.com" target="_blank" rel="noopener">
+        Powered by <strong>GrappleTrade.LLC</strong>
+    </a>
     <header class="top-bar">
         <div class="top-bar-content">
             <a class="brand" href="/">
@@ -35,6 +38,12 @@
         <h1>Rank Dashboard</h1>
         <p class="page-subtitle">Manage the roster, build each week's order, and publish it live.</p>
 
+        <ol class="dashboard-guide" id="dashboard-guide" style="display:none;">
+            <li><strong>Pick a week, then each weight class</strong> — last week's order loads so you only tweak it. All 14 classes are shown as tabs (green dot = submitted). Need a new week? Use <em>+ New week</em> next to the picker.</li>
+            <li><strong>Fill the ranking</strong>: drag wrestlers in (or use the ▲/▼ arrows on a phone), or click <em>+ Add wrestler</em> on an empty slot to create one on the spot.</li>
+            <li><strong>Go live with <em>Submit all 14</em></strong> — it publishes every weight class for the week at once. <em>Remove from public</em> takes the week back down, and <em>Full View</em> reviews all 14 before you submit.</li>
+        </ol>
+
         <div id="not-ranker" class="empty" style="display:none;">
             You need ranker access to use this page. Sign in, then ask an existing ranker to add your
             account, or see the README to bootstrap the first ranker.
@@ -44,50 +53,41 @@
 
             <section class="panel">
                 <div class="panel-header">
-                    <h2>1. Weeks</h2>
-                    <span class="panel-hint">Create a week before building a ranking for it</span>
+                    <h2>Build a Ranking</h2>
+                    <span class="panel-hint">Pick a week, click a weight class — last week's order loads so you just tweak it</span>
                 </div>
-                <ul class="simple-list" id="weeks-list"></ul>
-                <form id="new-week-form" class="inline-form">
-                    <input type="text" id="new-week-label" placeholder="Label, e.g. Week 4 - Jan 12" maxlength="60" required>
-                    <input type="date" id="new-week-date" required>
-                    <button class="btn btn-primary" type="submit">Add Week</button>
-                </form>
-                <p class="form-error" id="week-error"></p>
-            </section>
+                <div class="builder-picker">
+                    <div class="controls-row">
+                        <label for="builder-week-select">Week</label>
+                        <select id="builder-week-select"></select>
+                        <details class="new-week-details">
+                            <summary>+ New week</summary>
+                            <form id="new-week-form" class="inline-form">
+                                <input type="text" id="new-week-label" placeholder="Label, e.g. Week 4 - Jan 12" maxlength="60" required>
+                                <input type="date" id="new-week-date" required>
+                                <button class="btn btn-primary btn-sm" type="submit">Add Week</button>
+                            </form>
+                            <p class="form-error" id="week-error"></p>
+                        </details>
+                    </div>
+                    <div class="controls-row">
+                        <label>Weight class</label>
+                        <div class="weight-tabs" id="builder-weight-tabs"></div>
+                    </div>
+                </div>
 
-            <section class="panel">
-                <div class="panel-header">
-                    <h2>2. Roster</h2>
-                    <span class="panel-hint">Wrestlers available to rank</span>
-                </div>
-                <form id="new-wrestler-form" class="inline-form">
-                    <input type="text" id="new-wrestler-name" placeholder="Wrestler name" maxlength="100" required>
-                    <input type="text" id="new-wrestler-school" placeholder="School" maxlength="100" required>
-                    <input type="text" id="new-wrestler-weight" placeholder="Weight class" maxlength="20" required>
-                    <button class="btn btn-primary" type="submit">Add Wrestler</button>
-                </form>
-                <p class="form-error" id="wrestler-error"></p>
-                <ul class="simple-list" id="roster-list"></ul>
-            </section>
-
-            <section class="panel">
-                <div class="panel-header">
-                    <h2>3. Build a Ranking</h2>
-                    <span class="panel-hint">Drag wrestlers into order, autosaves as you go</span>
-                </div>
-                <div class="inline-form">
-                    <select id="builder-week-select"></select>
-                    <input type="text" id="builder-weight-class" placeholder="Weight class, e.g. 126" maxlength="20">
-                    <button class="btn btn-primary" type="button" id="load-list-btn">Load / Create</button>
+                <div class="week-actions" id="week-actions" style="display:none;">
+                    <span class="week-progress" id="week-progress"></span>
+                    <div class="week-actions-btns">
+                        <button type="button" class="btn btn-ghost btn-sm" id="full-view-btn">Full View</button>
+                        <button type="button" class="btn btn-ghost btn-sm" id="remove-week-btn">Remove from public</button>
+                        <button type="button" class="btn btn-primary btn-sm" id="submit-ranking-btn">Submit all 14</button>
+                    </div>
                 </div>
 
                 <div id="builder-panel" style="display:none;">
                     <div class="builder-toolbar">
-                        <label class="publish-toggle">
-                            <input type="checkbox" id="publish-toggle">
-                            Published (visible to the public)
-                        </label>
+                        <span class="hint">Edits autosave. Double-click any wrestler to edit their details. Use <strong>Submit all 14</strong> above to publish the whole week live.</span>
                         <span id="save-indicator" class="save-indicator"></span>
                     </div>
 
@@ -97,12 +97,42 @@
                             <ul class="drag-list" id="order-list"></ul>
                         </div>
                         <div class="builder-column">
-                            <h3>Available Wrestlers</h3>
-                            <input type="text" id="available-search" placeholder="Search roster...">
+                            <h3 id="available-heading">Available Wrestlers</h3>
+                            <div class="available-search-row">
+                                <input type="text" id="available-search" placeholder="Search this weight class...">
+                                <button type="button" id="toggle-all-weights" class="btn btn-ghost btn-sm">Show all weight classes</button>
+                            </div>
                             <ul class="drag-list" id="available-list"></ul>
                         </div>
                     </div>
                 </div>
+            </section>
+
+            <section class="panel">
+                <div class="panel-header">
+                    <h2>Roster</h2>
+                    <span class="panel-hint">Wrestlers available to rank — double-click any wrestler to edit</span>
+                </div>
+                <form id="new-wrestler-form" class="inline-form">
+                    <input type="text" id="new-wrestler-name" placeholder="Wrestler name" maxlength="100" required>
+                    <input type="text" id="new-wrestler-school" placeholder="School" maxlength="100" required>
+                    <input type="text" id="new-wrestler-weight" placeholder="Weight class" maxlength="20" list="weight-class-options" required>
+                    <datalist id="weight-class-options"></datalist>
+                    <input type="text" id="new-wrestler-grade" placeholder="Grade / Year" maxlength="20">
+                    <input type="text" id="new-wrestler-record" placeholder="Record (e.g. 24-3)" maxlength="20">
+                    <input type="text" id="new-wrestler-hometown" placeholder="Hometown" maxlength="100">
+                    <input type="text" id="new-wrestler-notes" placeholder="Notes" maxlength="300">
+                    <button class="btn btn-primary" type="submit">Add Wrestler</button>
+                </form>
+                <p class="form-error" id="wrestler-error"></p>
+                <div class="roster-tools">
+                    <button type="button" class="btn btn-ghost btn-sm" id="import-csv-btn">Import CSV</button>
+                    <input type="file" id="import-csv-input" accept=".csv,text/csv" hidden>
+                    <button type="button" class="btn btn-ghost btn-sm" id="download-template-btn">CSV template</button>
+                    <button type="button" class="btn btn-ghost btn-sm" id="export-csv-btn">Export roster</button>
+                    <span class="hint" id="csv-status"></span>
+                </div>
+                <ul class="simple-list" id="roster-list"></ul>
             </section>
 
             <section class="panel">
@@ -123,6 +153,55 @@
 
         </div>
     </main>
+
+    <div id="full-view-overlay" class="fullview-overlay" style="display:none;">
+        <div class="fullview-inner">
+            <div class="fullview-header">
+                <h2 id="fullview-title">All Rankings</h2>
+                <button type="button" class="btn btn-ghost btn-sm" id="fullview-close">Close</button>
+            </div>
+            <div id="fullview-content" class="fullview-content"></div>
+            <div class="fullview-footer">
+                <span id="fullview-status" class="hint"></span>
+                <div class="fullview-footer-btns">
+                    <button type="button" class="btn btn-ghost" id="fullview-remove-all">Remove from public</button>
+                    <button type="button" class="btn btn-primary" id="fullview-publish-all">Submit all 14 &amp; publish</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="wrestler-edit-overlay" class="fullview-overlay" style="display:none;">
+        <div class="fullview-inner wrestler-edit-inner">
+            <div class="fullview-header">
+                <h2>Edit Wrestler</h2>
+                <button type="button" class="btn btn-ghost btn-sm" id="wrestler-edit-close">Close</button>
+            </div>
+            <form id="wrestler-edit-form" class="wrestler-edit-form">
+                <label class="field">
+                    <span>Name</span>
+                    <input type="text" id="we-name" maxlength="100" required>
+                </label>
+                <label class="field">
+                    <span>School</span>
+                    <input type="text" id="we-school" maxlength="100" required>
+                </label>
+                <label class="field">
+                    <span>Weight class</span>
+                    <input type="text" id="we-weight" maxlength="20" list="weight-class-options" required>
+                </label>
+                <!-- Optional customizable fields are injected here from
+                     WRESTLER_OPTIONAL_FIELDS so adding a field stays one-line. -->
+                <div id="we-optional-fields"></div>
+                <p class="form-error" id="wrestler-edit-error"></p>
+            </form>
+            <div class="fullview-footer">
+                <button type="button" class="btn btn-ghost btn-sm" id="wrestler-edit-delete">Delete wrestler</button>
+                <span id="wrestler-edit-status" class="hint"></span>
+                <button type="submit" form="wrestler-edit-form" class="btn btn-primary" id="wrestler-edit-save">Save changes</button>
+            </div>
+        </div>
+    </div>
 
     <footer class="site-footer">
         <div class="site-footer-inner">

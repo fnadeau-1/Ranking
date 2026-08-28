@@ -12,6 +12,9 @@
     <link rel="stylesheet" href="css/components.css">
 </head>
 <body>
+    <a class="promo-strip" href="https://grappletrade.com" target="_blank" rel="noopener">
+        Powered by <strong>GrappleTrade.LLC</strong>
+    </a>
     <header class="top-bar">
         <div class="top-bar-content">
             <a class="brand" href="/">
@@ -34,7 +37,7 @@
     <main class="container">
         <div class="page-head">
             <h1>Weekly Rankings</h1>
-            <p class="page-subtitle">Pick a week and weight class. Compare the ranker's call to the People's Ranking, build your own, and weigh in.</p>
+            <p class="page-subtitle">The official rankings, set each week by the head of Montana's rankings. Pick a week and weight class, compare the People's Ranking, build your own, and weigh in.</p>
         </div>
 
         <div class="controls-row">
@@ -46,15 +49,34 @@
 
         <div id="ranking-panel">
             <div class="view-toggle" id="view-toggle">
-                <button class="view-tab active" data-view="ranker">Ranker's Ranking</button>
+                <button class="view-tab active" data-view="ranker">Official Ranking</button>
                 <button class="view-tab" data-view="people">The People's Ranking</button>
             </div>
             <p class="view-caption" id="view-caption"></p>
+            <div class="vote-bar" id="vote-widget"></div>
             <ol class="ranking-list" id="ranking-list"></ol>
-            <div class="vote-widget" id="vote-widget"></div>
         </div>
 
-        <section class="fan-rank-section" id="fan-rank-section">
+        <section class="comments-section">
+            <h2>Comments</h2>
+            <p class="notice" id="comment-closed-note" style="display:none;">
+                Comments are open only on the current week's ranking. You're viewing a past week — scroll and compare all you like, but the thread is closed.
+            </p>
+            <div id="comments-list"></div>
+            <button class="btn btn-ghost btn-block" type="button" id="add-comment-btn" style="display:none;">Add comment</button>
+            <form id="comment-form" style="display:none;">
+                <textarea id="comment-text" maxlength="1000" placeholder="Share your take on this week's rankings..." required></textarea>
+                <div class="comment-form-actions">
+                    <button class="btn btn-primary" type="submit">Post comment</button>
+                    <button class="link-btn" type="button" id="cancel-comment-btn">Cancel</button>
+                </div>
+                <p class="comment-quota">Up to 10 comments per person, per week's ranking.</p>
+                <p class="form-error" id="comment-error"></p>
+            </form>
+            <p class="empty" id="comment-signin-prompt" style="display:none;"><a href="sign-in?next=rankings">Sign in</a> to comment.</p>
+        </section>
+
+        <section class="fan-rank-section" id="fan-rank-section" style="display:none;">
             <div class="panel-header">
                 <h2>Make your own ranking</h2>
                 <span class="panel-hint">Drag to reorder — same wrestlers, your call</span>
@@ -63,29 +85,26 @@
                 <a href="sign-in?next=rankings">Sign in</a> to build your own ranking and feed the People's Ranking.
             </p>
             <div id="fan-rank-builder" style="display:none;">
-                <ol class="fan-drag-list" id="fan-order-list"></ol>
+                <div class="fan-rank-layout">
+                    <div class="fan-build-col">
+                        <span class="fan-col-label">Your ranking — drag to reorder</span>
+                        <ol class="fan-drag-list" id="fan-order-list"></ol>
+                    </div>
+                    <aside class="fan-ref-col">
+                        <div class="fan-ref-toggle view-toggle" id="fan-ref-toggle">
+                            <button class="view-tab ref-tab active" type="button" data-ref="ranker">Official</button>
+                            <button class="view-tab ref-tab" type="button" data-ref="people">People's Choice</button>
+                        </div>
+                        <ol class="ranking-list fan-ref-list" id="fan-ref-list"></ol>
+                    </aside>
+                </div>
                 <div class="fan-rank-toolbar">
                     <button class="btn btn-primary" type="button" id="save-ranking-btn">Save my ranking</button>
-                    <button class="link-btn" type="button" id="reset-ranking-btn">Reset to ranker's order</button>
+                    <button class="link-btn" type="button" id="reset-ranking-btn">Reset to official order</button>
                     <span class="save-indicator" id="fan-save-indicator"></span>
                 </div>
                 <p class="form-error" id="fan-rank-error"></p>
             </div>
-        </section>
-
-        <section class="comments-section">
-            <h2>Comments</h2>
-            <p class="notice" id="comment-closed-note" style="display:none;">
-                Comments are open only on the current week's ranking. You're viewing a past week — scroll and compare all you like, but the thread is closed.
-            </p>
-            <div id="comments-list"></div>
-            <form id="comment-form" style="display:none;">
-                <textarea id="comment-text" maxlength="1000" placeholder="Share your take on this week's rankings..." required></textarea>
-                <button class="btn btn-primary" type="submit">Post comment</button>
-                <p class="comment-quota">Up to 10 comments per person, per week's ranking.</p>
-                <p class="form-error" id="comment-error"></p>
-            </form>
-            <p class="empty" id="comment-signin-prompt" style="display:none;"><a href="sign-in?next=rankings">Sign in</a> to comment.</p>
         </section>
     </main>
 

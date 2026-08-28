@@ -2,7 +2,11 @@ const {auth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged} = window.r
 
 function nextUrl() {
   const params = new URLSearchParams(window.location.search);
-  return params.get("next") || "rankings";
+  // Prevent open redirects: only allow bare same-origin relative paths
+  // (e.g. "rankings", "rank/archive"). Anything with a scheme (":"),
+  // host ("//"), backslash, or leading "/" is rejected in favor of "rankings".
+  const n = params.get("next") || "";
+  return /^[A-Za-z0-9_\-]+(\/[A-Za-z0-9_\-]+)*(\?[A-Za-z0-9_\-=&%]*)?$/.test(n) ? n : "rankings";
 }
 
 document.getElementById("google-sign-in").addEventListener("click", async () => {

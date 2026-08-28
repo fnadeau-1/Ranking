@@ -34,8 +34,18 @@ onAuthStateChanged(auth, async (user) => {
     return;
   }
   renderSignedIn(user);
-  if (rankLink) {
-    const snap = await getDoc(doc(db, "rankers", user.uid));
-    rankLink.style.display = snap.exists() ? "" : "none";
+  if (!rankLink) return;
+  // Hide by default and only reveal for a confirmed ranker. Fail closed if the
+  // read errors (offline / App Check), and ignore a result that resolves after
+  // the signed-in account has already changed (stale-await race).
+  rankLink.style.display = "none";
+  const uid = user.uid;
+  try {
+    const snap = await getDoc(doc(db, "rankers", uid));
+    if (auth.currentUser && auth.currentUser.uid === uid) {
+      rankLink.style.display = snap.exists() ? "" : "none";
+    }
+  } catch (e) {
+    rankLink.style.display = "none";
   }
 });

@@ -1,3 +1,25 @@
+/* ---------- Sponsor ribbon (top of every page) ---------- */
+.promo-strip {
+  display: block;
+  text-align: center;
+  background: var(--color-primary-hover);
+  color: rgba(255, 255, 255, 0.78);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  padding: 6px var(--space-4);
+}
+
+.promo-strip strong {
+  color: var(--color-accent);
+  font-weight: 800;
+}
+
+.promo-strip:hover {
+  text-decoration: none;
+  color: #fff;
+}
+
 /* ---------- Top nav ---------- */
 .top-bar {
   background: var(--color-primary);
@@ -256,6 +278,64 @@ select:focus, input:focus, textarea:focus {
   color: #fff;
 }
 
+/* Per-tab submit status dot: published (green) / draft (gold) / not started. */
+.tab-status {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  margin-left: 6px;
+  vertical-align: middle;
+}
+
+.tab-status.published {
+  background: var(--color-success);
+}
+
+.tab-status.draft {
+  background: var(--color-accent);
+}
+
+.tab-status.empty {
+  background: var(--color-border);
+}
+
+/* Week-level actions bar (progress + Full View / Submit all 14 / Remove). */
+.week-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+  margin: 0 0 var(--space-4);
+  padding: var(--space-2) var(--space-3);
+  background: var(--color-surface-2);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+}
+
+.week-progress {
+  font-weight: 700;
+  font-size: 13px;
+  color: var(--color-muted);
+}
+
+.week-progress.complete {
+  color: var(--color-success);
+}
+
+.week-actions-btns {
+  display: flex;
+  gap: var(--space-2);
+  margin-left: auto;
+  flex-wrap: wrap;
+}
+
+.fullview-footer-btns {
+  display: flex;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+
 /* ---------- Ranking list ---------- */
 .ranking-list {
   list-style: none;
@@ -310,56 +390,87 @@ select:focus, input:focus, textarea:focus {
   margin-top: 1px;
 }
 
-/* ---------- Vote widget ---------- */
-.vote-widget {
-  background: var(--color-surface);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow);
-  padding: var(--space-5);
-  text-align: center;
-  margin-bottom: var(--space-6);
-}
-
-.vote-question {
-  margin: 0 0 var(--space-3);
-  font-weight: 700;
-  font-size: 15px;
-}
-
-.vote-buttons {
+/* ---------- Vote bar (compact) ---------- */
+.vote-bar {
   display: flex;
-  justify-content: center;
+  align-items: center;
   gap: var(--space-3);
   flex-wrap: wrap;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+  box-shadow: var(--shadow-sm);
+  padding: 7px 8px 7px var(--space-4);
+  margin-bottom: var(--space-4);
 }
 
-.vote-btn {
-  padding: 10px 22px;
+.vote-q {
+  font-weight: 700;
+  font-size: 13.5px;
+}
+
+.vote-chips {
+  display: flex;
+  gap: var(--space-2);
+  margin-left: auto;
+}
+
+.vote-chip {
+  padding: 6px 14px;
   border-radius: 999px;
   border: 1.5px solid var(--color-border);
   background: var(--color-surface);
   color: var(--color-text);
   font-weight: 700;
-  font-size: 14px;
+  font-size: 13px;
   cursor: pointer;
   font-family: inherit;
   transition: background 0.15s, border-color 0.15s, color 0.15s;
 }
 
-.vote-btn:hover {
+.vote-chip:hover:not(:disabled) {
   border-color: var(--color-primary);
 }
 
-.vote-btn.active-agree {
+/* Past weeks are view-only: chips show the final tally but can't be clicked. */
+.vote-chip:disabled {
+  cursor: default;
+  opacity: 0.65;
+}
+
+.vote-closed-note {
+  font-size: 12px;
+  color: var(--color-muted);
+  font-style: italic;
+}
+
+.vote-chip.active-agree {
   background: var(--color-success);
   border-color: var(--color-success);
   color: #fff;
 }
 
-.vote-btn.active-disagree {
+.vote-chip.active-disagree {
   background: var(--color-danger);
   border-color: var(--color-danger);
   color: #fff;
+}
+
+.vote-error:empty {
+  display: none;
+}
+
+.vote-error {
+  flex-basis: 100%;
+  min-height: 0;
+  margin: 0;
+  text-align: right;
+}
+
+.comment-form-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
 }
 
 /* ---------- Comments ---------- */
@@ -407,6 +518,122 @@ select:focus, input:focus, textarea:focus {
   align-self: flex-start;
 }
 
+/* Nested replies: an accent thread rail + the inline margin-left set per depth
+   in JS makes the thread structure obvious without deep DOM nesting. The rail
+   hangs the reply off its parent Instagram-style; JS clamps the indent at
+   MAX_INDENT_LEVELS so deep chains stay on-screen on mobile. */
+.comment-reply {
+  border-left: 3px solid var(--color-accent);
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+  padding-left: var(--space-4);
+}
+
+/* Muted "↳ Reply to <Name>" attribution shown on replies (depth > 0) so each
+   reply names the comment it answers. */
+.comment-reply-to {
+  font-size: 12px;
+  font-style: italic;
+  color: var(--color-muted);
+  margin-bottom: var(--space-1);
+}
+
+.comment-actions {
+  margin-top: var(--space-2);
+}
+
+.comment-reply-btn {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-primary);
+}
+
+.comment-reply-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin: 0 0 var(--space-3) 0;
+  /* Matching accent rail so the in-progress reply visibly belongs to the
+     comment it hangs beneath (JS sets the margin-left to indent it one step). */
+  border-left: 3px solid var(--color-accent);
+  padding-left: var(--space-4);
+}
+
+/* "Replying to <Name>…" hint in the reply form header. */
+.comment-reply-hint {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-muted);
+  margin: 0;
+}
+
+.comment-reply-hint:empty {
+  display: none;
+}
+
+.comment-reply-form textarea {
+  min-height: 56px;
+  resize: vertical;
+}
+
+.comment-reply-form .btn {
+  align-self: flex-start;
+}
+
+/* ---------- @-mentions ---------- */
+/* An @mention rendered inside comment text: a subtle accent chip. Only known
+   commenter names are ever wrapped in this span (escape-then-linkify), so it
+   never carries user-controlled markup. */
+.mention {
+  color: var(--color-accent-ink);
+  background: rgba(201, 162, 39, 0.18); /* --color-accent (#c9a227) at 18% */
+  border-radius: var(--radius-sm);
+  padding: 0 3px;
+  font-weight: 600;
+}
+
+/* Wrapper injected by attachMentionAutocomplete so the dropdown can anchor to
+   the textarea. Full-width flex item; the textarea keeps filling the form. */
+.mention-anchor {
+  position: relative;
+  display: block;
+  width: 100%;
+}
+
+.mention-anchor textarea {
+  width: 100%;
+}
+
+/* Autocomplete surface card, floated just under the textarea. */
+.mention-suggest {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  z-index: 20;
+  margin-top: var(--space-1);
+  max-height: 220px;
+  overflow-y: auto;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-lg);
+  padding: var(--space-1);
+}
+
+.mention-suggest-item {
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.mention-suggest-item.active,
+.mention-suggest-item:hover {
+  background: var(--color-surface-2);
+  color: var(--color-primary);
+}
+
 /* ---------- Forms ---------- */
 .form {
   background: var(--color-surface);
@@ -426,6 +653,11 @@ select:focus, input:focus, textarea:focus {
   margin-top: var(--space-3);
 }
 
+/* Same slot reused for a transient success confirmation. */
+.form-error.form-note {
+  color: var(--color-success);
+}
+
 .panel-note {
   color: var(--color-muted);
   font-size: 13px;
@@ -440,7 +672,34 @@ select:focus, input:focus, textarea:focus {
   margin: var(--space-3) 0;
 }
 
-/* ---------- Rank dashboard panels ---------- */
+/* ---------- Rank dashboard ---------- */
+.dashboard-guide {
+  background: var(--color-surface-2);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  padding: var(--space-3) var(--space-4) var(--space-3) calc(var(--space-4) + 1.2em);
+  margin: 0 0 var(--space-5);
+  color: var(--color-muted);
+  font-size: 13.5px;
+  line-height: 1.5;
+}
+
+.dashboard-guide li {
+  margin-bottom: var(--space-1);
+}
+
+.dashboard-guide strong {
+  color: var(--color-text);
+}
+
+.builder-picker {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+  align-items: flex-start;
+  margin: var(--space-3) 0 var(--space-4);
+}
+
 .panel {
   background: var(--color-surface);
   border-radius: var(--radius-lg);
@@ -487,6 +746,28 @@ select:focus, input:focus, textarea:focus {
   border-bottom: none;
 }
 
+/* Roster CSV tools + inline edit row */
+.roster-tools {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  align-items: center;
+  margin: var(--space-2) 0 var(--space-3);
+}
+
+.roster-editing {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  align-items: center;
+}
+
+.roster-editing input {
+  flex: 1 1 120px;
+  min-width: 0;
+  margin-bottom: 0;
+}
+
 .link-btn {
   background: none;
   border: none;
@@ -512,6 +793,154 @@ select:focus, input:focus, textarea:focus {
   margin: var(--space-4) 0 var(--space-3);
   padding-top: var(--space-3);
   border-top: 1px solid var(--color-border);
+}
+
+.builder-actions {
+  display: flex;
+  gap: var(--space-2);
+  margin-left: auto;
+}
+
+/* Tucked-away "new week" disclosure inside the Week picker. */
+.new-week-details {
+  margin-top: var(--space-2);
+}
+
+.new-week-details summary {
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--color-primary);
+  width: fit-content;
+}
+
+.new-week-details .inline-form {
+  margin-top: var(--space-2);
+}
+
+/* ---------- Full-view overlay (review all rankings before submitting) ---------- */
+.fullview-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  background: rgba(0, 0, 0, 0.55);
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: var(--space-4);
+  overflow-y: auto;
+}
+
+.fullview-inner {
+  background: var(--color-surface-2);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  width: 100%;
+  max-width: 1100px;
+  margin: var(--space-4) 0;
+  display: flex;
+  flex-direction: column;
+}
+
+/* The double-click edit dialog reuses the overlay chrome but is a narrow form. */
+.wrestler-edit-inner {
+  max-width: 460px;
+}
+
+.wrestler-edit-form {
+  padding: var(--space-4) var(--space-5);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.wrestler-edit-form .field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.wrestler-edit-form .field span {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--color-muted);
+}
+
+.wrestler-edit-form input {
+  margin-bottom: 0;
+}
+
+#we-optional-fields {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.fullview-header,
+.fullview-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-4) var(--space-5);
+  position: sticky;
+  background: var(--color-surface-2);
+  z-index: 1;
+}
+
+.fullview-header {
+  top: 0;
+  border-bottom: 1px solid var(--color-border);
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+}
+
+.fullview-header h2 {
+  margin: 0;
+}
+
+.fullview-footer {
+  bottom: 0;
+  border-top: 1px solid var(--color-border);
+  border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+}
+
+.fullview-content {
+  padding: var(--space-4) var(--space-5);
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: var(--space-4);
+}
+
+.fv-list-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  margin-bottom: var(--space-2);
+}
+
+.fv-list-header h3 {
+  margin: 0;
+}
+
+.fv-badge {
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 2px 8px;
+  border-radius: 999px;
+}
+
+.fv-live {
+  background: var(--color-success);
+  color: #fff;
+}
+
+.fv-draft {
+  background: var(--color-surface);
+  color: var(--color-muted);
+  border: 1px solid var(--color-border);
 }
 
 .publish-toggle {
@@ -625,6 +1054,79 @@ select:focus, input:focus, textarea:focus {
 .drag-add:hover {
   background: #d3ecdc;
   color: var(--color-success);
+}
+
+/* Up/down reorder controls — the touch-friendly alternative to drag on phones. */
+.move-btns {
+  display: flex;
+  gap: 2px;
+  flex-shrink: 0;
+}
+
+.move-btn {
+  border: none;
+  background: var(--color-surface-2);
+  border-radius: var(--radius-sm);
+  width: 30px;
+  height: 30px;
+  font-size: 11px;
+  line-height: 1;
+  cursor: pointer;
+  color: var(--color-text);
+  flex-shrink: 0;
+}
+
+.move-btn:hover:not(:disabled) {
+  background: var(--color-border);
+  color: var(--color-primary);
+}
+
+.move-btn:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+
+/* ---------- Empty ranking slots + inline create ---------- */
+.drag-item.empty-slot {
+  background: transparent;
+  border: 1.5px dashed var(--color-border);
+  box-shadow: none;
+  cursor: default;
+}
+
+.slot-add {
+  flex: 1;
+  border: none;
+  background: none;
+  text-align: left;
+  color: var(--color-muted);
+  font-weight: 600;
+  font-size: 14px;
+  font-family: inherit;
+  cursor: pointer;
+  padding: 0;
+}
+
+.slot-add:hover {
+  color: var(--color-primary);
+}
+
+.slot-create-form {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  flex-wrap: wrap;
+}
+
+.slot-create-form input {
+  flex: 1;
+  min-width: 90px;
+  padding: 6px 8px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  font-family: inherit;
+  font-size: 13px;
 }
 
 /* ---------- Ranker's vs People's view toggle ---------- */
@@ -743,6 +1245,60 @@ select:focus, input:focus, textarea:focus {
   flex-shrink: 0;
 }
 
+/* Builder on the left, a read-only reference ranking on the right. */
+.fan-rank-layout {
+  display: flex;
+  gap: var(--space-4);
+  align-items: flex-start;
+}
+
+.fan-build-col {
+  flex: 1 1 55%;
+  min-width: 0;
+}
+
+.fan-ref-col {
+  flex: 1 1 45%;
+  min-width: 0;
+}
+
+.fan-col-label {
+  display: block;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--color-muted);
+  margin-bottom: var(--space-1);
+}
+
+.fan-ref-toggle {
+  margin-bottom: var(--space-2);
+}
+
+.fan-ref-toggle .ref-tab {
+  padding: 6px 12px;
+  font-size: 12px;
+}
+
+.fan-ref-list {
+  margin: 0;
+}
+
+.fan-ref-list .ref-row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+}
+
+@media (max-width: 640px) {
+  .fan-rank-layout {
+    flex-direction: column;
+  }
+  .fan-build-col,
+  .fan-ref-col {
+    flex-basis: auto;
+    width: 100%;
+  }
+}
+
 .fan-rank-toolbar {
   display: flex;
   align-items: center;
@@ -789,6 +1345,24 @@ select:focus, input:focus, textarea:focus {
 
 .btn-ghost-light:hover {
   background: rgba(255, 255, 255, 0.16);
+}
+
+.btn-sm {
+  padding: 8px 14px;
+  font-size: 13px;
+  white-space: nowrap;
+}
+
+.available-search-row {
+  display: flex;
+  gap: 8px;
+  align-items: stretch;
+  flex-wrap: wrap;
+}
+
+.available-search-row #available-search {
+  flex: 1;
+  min-width: 0;
 }
 
 /* ---------- Hero ---------- */
@@ -904,10 +1478,20 @@ select:focus, input:focus, textarea:focus {
   justify-content: center;
   width: 44px;
   height: 44px;
-  margin-bottom: var(--space-3);
-  border-radius: 12px;
-  background: var(--color-surface-2);
-  font-size: 22px;
+  margin-bottom: var(--space-4);
+  border-radius: 10px;
+  background: rgba(22, 33, 62, 0.06);
+  color: var(--color-primary);
+}
+
+.card-icon svg {
+  width: 22px;
+  height: 22px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 1.75;
+  stroke-linecap: round;
+  stroke-linejoin: round;
 }
 
 /* ---------- Numbered steps (how it works) ---------- */

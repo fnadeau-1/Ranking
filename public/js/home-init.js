@@ -10,13 +10,14 @@ const listEl = document.getElementById("this-week-list");
 
 const MAX_ROWS = 8;
 
-function sortByWeight(lists) {
-  return [...lists].sort((a, b) => {
-    const na = parseFloat(a.weightClass);
-    const nb = parseFloat(b.weightClass);
-    if (!isNaN(na) && !isNaN(nb) && na !== nb) return na - nb;
-    return String(a.weightClass).localeCompare(String(b.weightClass));
-  });
+function toMillis(ts) {
+  return ts && typeof ts.toMillis === "function" ? ts.toMillis() : 0;
+}
+
+// The most recently updated published list — so the featured class genuinely is
+// the "newest from the board" the copy promises (rankingLists carry updatedAt).
+function mostRecent(lists) {
+  return [...lists].sort((a, b) => toMillis(b.updatedAt) - toMillis(a.updatedAt))[0];
 }
 
 async function loadThisWeek() {
@@ -46,7 +47,7 @@ async function loadThisWeek() {
       return;
     }
 
-    const list = sortByWeight(lists)[0];
+    const list = mostRecent(lists);
     const wrestlersSnap = await getDocs(collection(db, "wrestlers"));
     const wrestlers = new Map(wrestlersSnap.docs.map((d) => [d.id, d.data()]));
 
