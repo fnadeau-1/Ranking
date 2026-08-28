@@ -123,7 +123,10 @@
   background: var(--color-accent);
 }
 
-@media (max-width: 720px) {
+/* Collapse to the hamburger menu while there isn't room for the full row of
+   nav items (up to 9 when a ranker is signed in), so it never wraps to a
+   second line and overlaps the page. */
+@media (max-width: 1080px) {
   .nav-toggle {
     display: block;
   }

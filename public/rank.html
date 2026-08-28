@@ -111,6 +111,27 @@
 
             <section class="panel">
                 <div class="panel-header">
+                    <h2>Team Rankings</h2>
+                    <span class="panel-hint">Teams ranked by points — edit inline, changes autosave</span>
+                </div>
+                <div class="team-publish-row">
+                    <label class="switch-row">
+                        <input type="checkbox" id="team-publish-toggle">
+                        <span>Show team rankings publicly</span>
+                    </label>
+                    <span class="hint" id="team-publish-status"></span>
+                </div>
+                <form id="new-team-form" class="inline-form">
+                    <input type="text" id="new-team-name" placeholder="Team / school" maxlength="100" required>
+                    <input type="text" id="new-team-points" placeholder="Points (optional)" maxlength="20">
+                    <button class="btn btn-primary" type="submit">Add Team</button>
+                </form>
+                <p class="form-error" id="team-error"></p>
+                <ul class="simple-list" id="team-list"></ul>
+            </section>
+
+            <section class="panel">
+                <div class="panel-header">
                     <h2>Roster</h2>
                     <span class="panel-hint">Wrestlers available to rank — double-click any wrestler to edit</span>
                 </div>
@@ -134,27 +155,6 @@
                     <span class="hint" id="csv-status"></span>
                 </div>
                 <ul class="simple-list" id="roster-list"></ul>
-            </section>
-
-            <section class="panel">
-                <div class="panel-header">
-                    <h2>Team Rankings</h2>
-                    <span class="panel-hint">Teams ranked by points — edit inline, changes autosave</span>
-                </div>
-                <div class="team-publish-row">
-                    <label class="switch-row">
-                        <input type="checkbox" id="team-publish-toggle">
-                        <span>Show team rankings publicly</span>
-                    </label>
-                    <span class="hint" id="team-publish-status"></span>
-                </div>
-                <form id="new-team-form" class="inline-form">
-                    <input type="text" id="new-team-name" placeholder="Team / school" maxlength="100" required>
-                    <input type="text" id="new-team-points" placeholder="Points (optional)" maxlength="20">
-                    <button class="btn btn-primary" type="submit">Add Team</button>
-                </form>
-                <p class="form-error" id="team-error"></p>
-                <ul class="simple-list" id="team-list"></ul>
             </section>
 
             <section class="panel">

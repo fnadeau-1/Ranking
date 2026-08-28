@@ -1,76 +1,83 @@
-import {escapeHtml} from "./util.js";
+import {escapeHtml, teamPointsValue} from "./util.js";
 
-const {
-  db, collection, getDocs, query, where, orderBy, limit,
-} = window.rankingApp;
+const {db, collection, doc, onSnapshot} = window.rankingApp;
 
 const titleEl = document.getElementById("this-week-title");
 const subEl = document.getElementById("this-week-sub");
 const listEl = document.getElementById("this-week-list");
+const moreLinkEl = document.getElementById("this-week-more");
 
-const MAX_ROWS = 8;
+const MAX_ROWS = 10;
 
-function toMillis(ts) {
-  return ts && typeof ts.toMillis === "function" ? ts.toMillis() : 0;
+let teams = [];
+let published = false;
+let teamsLoaded = false;
+let configLoaded = false;
+
+// Teams ranked by points (highest first); blank/non-numeric points sort last,
+// then alphabetical — same rule as the Teams page.
+function sortedTeams() {
+  return [...teams].sort((a, b) => {
+    const pv = teamPointsValue(b.points) - teamPointsValue(a.points);
+    if (pv !== 0) return pv;
+    return (a.name || "").localeCompare(b.name || "");
+  });
 }
 
-// The most recently updated published list — so the featured class genuinely is
-// the "newest from the board" the copy promises (rankingLists carry updatedAt).
-function mostRecent(lists) {
-  return [...lists].sort((a, b) => toMillis(b.updatedAt) - toMillis(a.updatedAt))[0];
+function setMoreVisible(show) {
+  if (moreLinkEl) moreLinkEl.style.display = show ? "" : "none";
 }
 
-async function loadThisWeek() {
-  try {
-    const weekSnap = await getDocs(
-        query(collection(db, "weeks"), orderBy("startDate", "desc"), limit(1)),
-    );
-    if (weekSnap.empty) {
-      titleEl.textContent = "No rankings published yet";
-      subEl.textContent = "Check back once the first week goes live.";
-      listEl.innerHTML = '<li class="empty">Nothing here yet.</li>';
-      return;
-    }
-    const week = {id: weekSnap.docs[0].id, ...weekSnap.docs[0].data()};
+function render() {
+  // Wait until both sources have reported once so we don't flash a wrong state.
+  if (!teamsLoaded || !configLoaded) return;
 
-    const listsSnap = await getDocs(query(
-        collection(db, "rankingLists"),
-        where("weekId", "==", week.id),
-        where("published", "==", true),
-    ));
-    const lists = listsSnap.docs.map((d) => ({id: d.id, ...d.data()}))
-        .filter((l) => Array.isArray(l.order) && l.order.length > 0);
-    if (lists.length === 0) {
-      titleEl.textContent = week.label;
-      subEl.textContent = "No weight classes published for this week yet.";
-      listEl.innerHTML = '<li class="empty">Nothing ranked yet.</li>';
-      return;
-    }
+  titleEl.textContent = "Team Rankings";
 
-    const list = mostRecent(lists);
-    const wrestlersSnap = await getDocs(collection(db, "wrestlers"));
-    const wrestlers = new Map(wrestlersSnap.docs.map((d) => [d.id, d.data()]));
-
-    titleEl.textContent = `${week.label} — ${list.weightClass}`;
-    subEl.textContent = "The newest published weight class, straight from the board.";
-
-    const rows = list.order.slice(0, MAX_ROWS).map((id, i) => {
-      const w = wrestlers.get(id);
-      if (!w) return "";
-      return `
-        <li class="player-row">
-          <span class="rank">#${i + 1}</span>
-          <span class="name">${escapeHtml(w.name)}<div class="category">${escapeHtml(w.school)}</div></span>
-        </li>`;
-    }).join("");
-    const more = list.order.length > MAX_ROWS ?
-      `<li class="empty"><a href="rankings?week=${encodeURIComponent(week.id)}">See the full ${escapeHtml(list.weightClass)} ranking &rarr;</a></li>` : "";
-    listEl.innerHTML = rows + more;
-  } catch (err) {
-    titleEl.textContent = "Couldn't load this week";
-    subEl.textContent = "Head to the rankings page to see the latest.";
-    listEl.innerHTML = '<li class="empty">Try the Rankings page.</li>';
+  if (!published) {
+    subEl.textContent = "Team rankings aren't published yet — check back soon.";
+    listEl.innerHTML = '<li class="empty">No team rankings published yet.</li>';
+    setMoreVisible(false);
+    return;
   }
+  if (teams.length === 0) {
+    subEl.textContent = "Montana teams, ranked by points.";
+    listEl.innerHTML = '<li class="empty">No teams in the ranking yet.</li>';
+    setMoreVisible(false);
+    return;
+  }
+
+  subEl.textContent = "Montana teams, ranked by points.";
+  const sorted = sortedTeams();
+  listEl.innerHTML = sorted.slice(0, MAX_ROWS).map((t, i) => {
+    const pts = (t.points || "").trim();
+    const ptsHtml = pts ?
+      `<span class="team-points">${escapeHtml(pts)} pts</span>` : "";
+    return `
+      <li class="player-row team-standing-row">
+        <span class="rank">#${i + 1}</span>
+        <span class="name">${escapeHtml(t.name || "")}</span>
+        ${ptsHtml}
+      </li>`;
+  }).join("");
+  setMoreVisible(sorted.length > MAX_ROWS);
 }
 
-loadThisWeek();
+onSnapshot(collection(db, "teams"), (snap) => {
+  teams = snap.docs.map((d) => d.data());
+  teamsLoaded = true;
+  render();
+}, () => {
+  titleEl.textContent = "Team Rankings";
+  subEl.textContent = "Head to the Teams page to see the latest.";
+  listEl.innerHTML = '<li class="empty">Try the Teams page.</li>';
+});
+
+onSnapshot(doc(db, "config", "teamRanking"), (snap) => {
+  published = snap.exists() && snap.data().published === true;
+  configLoaded = true;
+  render();
+}, () => {
+  configLoaded = true;
+  render();
+});
