@@ -1659,3 +1659,93 @@ select:focus, input:focus, textarea:focus {
 .powered-by:hover strong {
   color: var(--color-accent);
 }
+
+/* ---------- Team rankings (dashboard) ---------- */
+.team-publish-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+  margin-bottom: var(--space-3);
+}
+
+.switch-row {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.team-row {
+  justify-content: flex-start;
+  gap: var(--space-2);
+}
+
+.team-rank {
+  font-weight: 700;
+  color: var(--color-muted);
+  min-width: 2.4em;
+}
+
+.team-name-input {
+  flex: 2 1 160px;
+  min-width: 0;
+  margin-bottom: 0;
+}
+
+.team-points-input {
+  flex: 1 1 90px;
+  min-width: 0;
+  max-width: 130px;
+  margin-bottom: 0;
+}
+
+.team-row .link-btn {
+  margin-left: auto;
+}
+
+/* ---------- Team standings (public) ---------- */
+/* Override .player-row's 2-col grid so the points can sit on the right. */
+.team-standing-row {
+  display: flex;
+  align-items: center;
+}
+
+.team-standing-row .name {
+  flex: 1 1 auto;
+}
+
+.team-standing-row .team-points {
+  margin-left: auto;
+  font-weight: 700;
+  color: var(--color-accent-ink);
+  white-space: nowrap;
+}
+
+/* ---------- Settings ---------- */
+.settings-card {
+  margin-bottom: var(--space-4);
+}
+
+.settings-identity {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.settings-avatar {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid var(--color-border);
+}
+
+.settings-actions {
+  display: flex;
+  gap: var(--space-2);
+  margin-top: var(--space-4);
+  flex-wrap: wrap;
+}

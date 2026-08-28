@@ -30,6 +30,13 @@ export function wrestlerSubline(w) {
   return parts.join(" · ");
 }
 
+// Numeric value of a team's free-form `points` field, used to sort the team
+// ranking highest-first. Empty or non-numeric points sort to the bottom.
+export function teamPointsValue(points) {
+  const n = parseFloat(points);
+  return Number.isNaN(n) ? -Infinity : n;
+}
+
 export function escapeHtml(str) {
   return String(str)
     .replace(/&/g, "&amp;")

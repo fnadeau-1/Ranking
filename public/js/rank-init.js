@@ -1,5 +1,5 @@
 import {escapeHtml, listId, formatDate, slugify, WEIGHT_CLASSES,
-  WRESTLER_OPTIONAL_FIELDS, wrestlerSubline}
+  WRESTLER_OPTIONAL_FIELDS, wrestlerSubline, teamPointsValue}
   from "./util.js";
 
 const {
@@ -64,7 +64,14 @@ const editDeleteBtn = document.getElementById("wrestler-edit-delete");
 const newRankerForm = document.getElementById("new-ranker-form");
 const rankerError = document.getElementById("ranker-error");
 
+const newTeamForm = document.getElementById("new-team-form");
+const teamError = document.getElementById("team-error");
+const teamListEl = document.getElementById("team-list");
+const teamPublishToggle = document.getElementById("team-publish-toggle");
+const teamPublishStatus = document.getElementById("team-publish-status");
+
 let allWrestlers = new Map();
+let allTeams = new Map(); // teamId -> {name, points}
 let weeks = []; // all weeks, sorted by startDate DESC (newest first)
 let selectedWeekId = null;
 let selectedWeightClass = null;
@@ -73,7 +80,6 @@ let currentListRef = null;
 let currentOrder = [];
 let draggedId = null;
 let creatingAtSlot = null; // slot index whose inline "create wrestler" form is open
-let editingWrestlerId = null; // roster row currently being edited inline
 let wrestlersLoaded = false; // becomes true after the first wrestlers snapshot
 // Live publish status of the selected week's lists: weightClass -> {published, count}.
 let weekStatus = new Map();
@@ -193,6 +199,20 @@ function initDashboard() {
     if (selectedWeekId) builderWeekSelect.value = selectedWeekId;
     if (weekActionsEl) weekActionsEl.style.display = selectedWeekId ? "" : "none";
     subscribeWeekStatus(selectedWeekId);
+  });
+
+  // Team ranking: live roster of teams + the public-visibility flag.
+  onSnapshot(collection(db, "teams"), (snap) => {
+    allTeams = new Map(snap.docs.map((d) => [d.id, d.data()]));
+    renderTeams();
+  });
+  onSnapshot(doc(db, "config", "teamRanking"), (snap) => {
+    const published = snap.exists() && snap.data().published === true;
+    if (teamPublishToggle) teamPublishToggle.checked = published;
+    if (teamPublishStatus) {
+      teamPublishStatus.textContent = published ?
+        "Live on the Teams page" : "Hidden from the public";
+    }
   });
 }
 
@@ -783,71 +803,14 @@ function getDragAfterElement(container, y, excludeId) {
 function renderRoster() {
   const entries = [...allWrestlers.entries()]
       .sort((a, b) => (a[1].name || "").localeCompare(b[1].name || ""));
-  rosterListEl.innerHTML = entries.map(([id, w]) => {
-    if (id === editingWrestlerId) {
-      // Inline edit row. Inputs are DOM nodes read at save time; values are
-      // escaped into the value="" attribute.
-      const optInputs = WRESTLER_OPTIONAL_FIELDS.map((f) => `
-        <input type="text" class="edit-opt" data-key="${escapeHtml(f.key)}" maxlength="${f.max}" placeholder="${escapeHtml(f.placeholder)}" value="${escapeHtml(w[f.key] || "")}">`).join("");
-      return `
-      <li class="roster-editing" data-id="${escapeHtml(id)}">
-        <input type="text" class="edit-name" maxlength="100" placeholder="Name" value="${escapeHtml(w.name || "")}">
-        <input type="text" class="edit-school" maxlength="100" placeholder="School" value="${escapeHtml(w.school || "")}">
-        <input type="text" class="edit-weight" maxlength="20" list="weight-class-options" placeholder="Weight" value="${escapeHtml(w.weightClass || "")}">
-        ${optInputs}
-        <button type="button" class="btn btn-primary btn-sm" data-save="${escapeHtml(id)}">Save</button>
-        <button type="button" class="link-btn" data-cancel-edit>Cancel</button>
-      </li>`;
-    }
-    return `
+  // Editing is done by double-clicking a row (opens the shared editor modal),
+  // so each roster row is just the display line plus a quick Remove.
+  rosterListEl.innerHTML = entries.map(([id, w]) => `
     <li data-id="${escapeHtml(id)}" title="Double-click to edit">
       ${escapeHtml(w.name || "")} <span class="hint">${escapeHtml(rosterMeta(w))}</span>
-      <button type="button" class="link-btn" data-edit="${escapeHtml(id)}">Edit</button>
       <button type="button" class="link-btn" data-remove="${escapeHtml(id)}">Remove</button>
-    </li>`;
-  }).join("") || '<li class="empty">No wrestlers yet.</li>';
+    </li>`).join("") || '<li class="empty">No wrestlers yet.</li>';
 
-  rosterListEl.querySelectorAll("[data-edit]").forEach((btn) => {
-    btn.addEventListener("click", () => {
-      editingWrestlerId = btn.dataset.edit;
-      renderRoster();
-    });
-  });
-  rosterListEl.querySelectorAll("[data-cancel-edit]").forEach((btn) => {
-    btn.addEventListener("click", () => {
-      editingWrestlerId = null;
-      renderRoster();
-    });
-  });
-  rosterListEl.querySelectorAll("[data-save]").forEach((btn) => {
-    btn.addEventListener("click", async () => {
-      const li = btn.closest("li");
-      const name = li.querySelector(".edit-name").value.trim();
-      const school = li.querySelector(".edit-school").value.trim();
-      const weightClass = normalizeWeightClass(li.querySelector(".edit-weight").value);
-      if (!name || !school || !weightClass || !slugify(weightClass)) {
-        showWrestlerNote("Name, school, and a valid weight class are required.");
-        return;
-      }
-      // Read the optional fields off their data-key inputs.
-      const raw = {};
-      li.querySelectorAll(".edit-opt").forEach((inp) => {
-        raw[inp.dataset.key] = inp.value;
-      });
-      try {
-        // Rules allow updating name/school/weightClass plus the optional
-        // fields; cleared optional fields are removed via deleteField().
-        await updateDoc(doc(db, "wrestlers", btn.dataset.save), {
-          name, school, weightClass,
-          ...optionalFieldUpdates(raw, allWrestlers.get(btn.dataset.save)),
-        });
-        editingWrestlerId = null;
-        renderRoster();
-      } catch (err) {
-        showWrestlerNote(err.message || "Couldn't save changes.");
-      }
-    });
-  });
   rosterListEl.querySelectorAll("[data-remove]").forEach((btn) => {
     btn.addEventListener("click", async () => {
       if (!confirm("Remove this wrestler from the roster? This does not remove them from past ranking lists.")) return;
@@ -1216,3 +1179,106 @@ newRankerForm.addEventListener("submit", async (e) => {
     rankerError.textContent = err.message || "Couldn't add ranker.";
   }
 });
+
+// --- Team rankings ---
+// Teams are ranked by their free-form `points` field (highest first); ties and
+// blank/non-numeric points fall back to alphabetical. Rows are always editable
+// and autosave on change, so there's no separate edit mode.
+function sortedTeamEntries() {
+  return [...allTeams.entries()].sort((a, b) => {
+    const pv = teamPointsValue(b[1].points) - teamPointsValue(a[1].points);
+    if (pv !== 0) return pv;
+    return (a[1].name || "").localeCompare(b[1].name || "");
+  });
+}
+
+function renderTeams() {
+  if (!teamListEl) return;
+  // Don't rebuild while a ranker is mid-edit in one of the inputs (a snapshot
+  // firing from their own save would otherwise wipe focus/typing).
+  if (document.activeElement && teamListEl.contains(document.activeElement)) {
+    return;
+  }
+  const entries = sortedTeamEntries();
+  teamListEl.innerHTML = entries.map(([id, t], i) => `
+    <li class="team-row" data-id="${escapeHtml(id)}">
+      <span class="team-rank">#${i + 1}</span>
+      <input type="text" class="team-name-input" data-id="${escapeHtml(id)}" maxlength="100" value="${escapeHtml(t.name || "")}">
+      <input type="text" class="team-points-input" data-id="${escapeHtml(id)}" maxlength="20" placeholder="Points" value="${escapeHtml(t.points || "")}">
+      <button type="button" class="link-btn" data-remove-team="${escapeHtml(id)}">Remove</button>
+    </li>`).join("") || '<li class="empty">No teams yet.</li>';
+
+  // Autosave name/points on change (fires on blur/Enter, so focus has already
+  // left the field by the time the snapshot re-renders).
+  teamListEl.querySelectorAll(".team-name-input, .team-points-input")
+      .forEach((inp) => {
+        inp.addEventListener("change", async () => {
+          const li = inp.closest("li");
+          const id = inp.dataset.id;
+          const name = li.querySelector(".team-name-input").value.trim();
+          const points = li.querySelector(".team-points-input").value.trim();
+          if (!name) {
+            teamError.textContent = "Team name can't be empty.";
+            return;
+          }
+          teamError.textContent = "";
+          try {
+            const patch = {name};
+            patch.points = points ? points.slice(0, 20) : deleteField();
+            await updateDoc(doc(db, "teams", id), patch);
+          } catch (err) {
+            teamError.textContent = err.message || "Couldn't save team.";
+          }
+        });
+      });
+
+  teamListEl.querySelectorAll("[data-remove-team]").forEach((btn) => {
+    btn.addEventListener("click", async () => {
+      if (!confirm("Remove this team from the team ranking?")) return;
+      try {
+        await deleteDoc(doc(db, "teams", btn.dataset.removeTeam));
+      } catch (err) {
+        teamError.textContent = err.message || "Couldn't remove team.";
+      }
+    });
+  });
+}
+
+if (newTeamForm) {
+  newTeamForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    teamError.textContent = "";
+    const name = document.getElementById("new-team-name").value.trim();
+    const points = document.getElementById("new-team-points").value.trim();
+    if (!name) return;
+    try {
+      const data = {
+        name,
+        createdBy: auth.currentUser.uid,
+        createdAt: serverTimestamp(),
+      };
+      if (points) data.points = points.slice(0, 20);
+      await addDoc(collection(db, "teams"), data);
+      newTeamForm.reset();
+    } catch (err) {
+      teamError.textContent = err.message || "Couldn't add team.";
+    }
+  });
+}
+
+if (teamPublishToggle) {
+  teamPublishToggle.addEventListener("change", async () => {
+    const published = teamPublishToggle.checked;
+    try {
+      await setDoc(doc(db, "config", "teamRanking"), {
+        published,
+        updatedBy: auth.currentUser.uid,
+        updatedAt: serverTimestamp(),
+      });
+    } catch (err) {
+      // Revert the visual toggle if the write failed.
+      teamPublishToggle.checked = !published;
+      teamError.textContent = err.message || "Couldn't update visibility.";
+    }
+  });
+}

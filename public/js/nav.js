@@ -20,7 +20,9 @@ function renderSignedOut() {
 
 function renderSignedIn() {
   if (authSlot) {
-    authSlot.innerHTML = '<a href="#" id="sign-out-link">Sign out</a>';
+    authSlot.innerHTML =
+      '<a href="settings">Settings</a>' +
+      '<a href="#" id="sign-out-link">Sign out</a>';
     document.getElementById("sign-out-link").addEventListener("click", (e) => {
       e.preventDefault();
       signOut(auth);

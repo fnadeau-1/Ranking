@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Privacy &amp; Data | Montana Wrestling Rankings</title>
+    <meta name="description" content="What data Montana Wrestling Rankings collects, why, and how it's used.">
+    <link rel="icon" href="img/placeholder.svg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap">
+    <link rel="stylesheet" href="css/base.css">
+    <link rel="stylesheet" href="css/components.css">
+</head>
+<body>
+    <a class="promo-strip" href="https://grappletrade.com" target="_blank" rel="noopener">
+        Powered by <strong>GrappleTrade.LLC</strong>
+    </a>
+    <header class="top-bar">
+        <div class="top-bar-content">
+            <a class="brand" href="/">
+                <span class="brand-mark">MT</span>
+                <span class="brand-text">Montana Wrestling Rankings</span>
+            </a>
+            <button class="nav-toggle" id="nav-toggle" aria-label="Toggle menu" aria-expanded="false">&#9776;</button>
+            <nav class="nav-links" id="nav-links">
+                <a href="/">Home</a>
+                <a href="rankings">Rankings</a>
+                <a href="team-rankings">Teams</a>
+                <a href="how-it-works">How It Works</a>
+                <a href="about">About</a>
+                <a href="archive">Archive</a>
+                <a id="rank-link" href="rank" style="display:none">Dashboard</a>
+                <span id="auth-slot"></span>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="page-head">
+            <span class="eyebrow">Privacy &amp; Data</span>
+            <h1>What we collect, and why.</h1>
+        </div>
+
+        <div class="prose" style="max-width:68ch;">
+            <p>Montana Wrestling Rankings keeps data collection to the minimum
+            needed to run the site. You can read every ranking without signing in
+            or sharing anything. This page explains what happens when you do sign
+            in and take part.</p>
+
+            <h2>Reading the site</h2>
+            <p>Browsing rankings, team standings, and comments requires no account
+            and collects no personal information from you beyond the standard
+            technical logs any website receives (such as your IP address and
+            browser type, kept by our hosting provider, Google Firebase, for
+            security and reliability).</p>
+
+            <h2>When you sign in with Google</h2>
+            <p>Signing in is handled by Google Firebase Authentication. When you
+            sign in we receive and store:</p>
+            <ul>
+                <li>your name and profile photo from your Google account,</li>
+                <li>your email address and whether it is verified,</li>
+                <li>a unique account identifier (your user ID).</li>
+            </ul>
+            <p>We use this only to identify you on the site, attribute your votes
+            and comments, and gate features that require a verified email.</p>
+
+            <h2>What you create</h2>
+            <ul>
+                <li><strong>Votes</strong> — when you agree or disagree with a
+                ranking, we store your account ID, the ranking voted on, your
+                choice, and the time.</li>
+                <li><strong>Comments</strong> — the text you post, your display
+                name, your account ID, and the time. Comments are public.</li>
+                <li><strong>Your rankings</strong> — if you build your own order,
+                we store that order tied to your account ID so it can roll into
+                the People's Ranking.</li>
+            </ul>
+
+            <h2>Spam and abuse prevention</h2>
+            <p>The site uses Google reCAPTCHA and Firebase App Check to block
+            automated abuse. reCAPTCHA collects hardware and software information
+            and sends it to Google for analysis, subject to Google's own
+            <a href="https://policies.google.com/privacy" target="_blank" rel="noopener">Privacy Policy</a>
+            and <a href="https://policies.google.com/terms" target="_blank" rel="noopener">Terms of Service</a>.</p>
+
+            <h2>What we don't do</h2>
+            <p>We do not sell your data, we do not use it for advertising, and we
+            do not share it with third parties except the infrastructure providers
+            (Google Firebase and reCAPTCHA) needed to operate the site.</p>
+
+            <h2>Your choices</h2>
+            <p>You can sign out at any time from the
+            <a href="settings">Settings</a> page. To request deletion of your
+            account data (votes, comments, and saved rankings), contact the site
+            operator and we'll remove it. You can always keep using the site
+            anonymously by not signing in.</p>
+
+            <p class="hint">This notice may be updated as the site evolves. Last
+            updated when the Teams and Settings features were added.</p>
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        <div class="site-footer-inner">
+            <nav class="footer-nav">
+                <a href="/">Home</a>
+                <a href="rankings">Rankings</a>
+                <a href="team-rankings">Teams</a>
+                <a href="how-it-works">How It Works</a>
+                <a href="about">About</a>
+                <a href="archive">Archive</a>
+                <a href="privacy">Privacy</a>
+            </nav>
+            <a class="powered-by" href="https://grappletrade.com" target="_blank" rel="noopener">
+                Powered by <strong>GrappleTrade.LLC</strong>
+            </a>
+        </div>
+    </footer>
+
+    <script type="module" src="js/firebase-init.js"></script>
+    <script type="module" src="js/nav.js"></script>
+</body>
+</html>
