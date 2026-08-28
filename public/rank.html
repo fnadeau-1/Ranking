@@ -126,6 +126,10 @@
                     <input type="text" id="new-team-points" placeholder="Points (optional)" maxlength="20">
                     <button class="btn btn-primary" type="submit">Add Team</button>
                 </form>
+                <div class="roster-tools">
+                    <button type="button" class="btn btn-ghost btn-sm" id="seed-aa-teams-btn">Add all Montana AA teams</button>
+                    <span class="hint" id="seed-aa-status"></span>
+                </div>
                 <p class="form-error" id="team-error"></p>
                 <ul class="simple-list" id="team-list"></ul>
             </section>
@@ -171,6 +175,18 @@
                     <button class="btn btn-primary" type="submit">Add Ranker</button>
                 </form>
                 <p class="form-error" id="ranker-error"></p>
+
+                <p class="panel-note" style="margin-top:var(--space-4);">
+                    Or pre-authorize someone by email — they become a ranker
+                    automatically the first time they sign in with that Google
+                    account, even if they haven't signed in yet.
+                </p>
+                <form id="invite-ranker-form" class="inline-form">
+                    <input type="email" id="invite-ranker-email" placeholder="name@example.com" maxlength="200" required>
+                    <button class="btn btn-primary" type="submit">Invite by Email</button>
+                </form>
+                <p class="form-error" id="invite-error"></p>
+                <ul class="simple-list" id="invite-list"></ul>
             </section>
 
         </div>

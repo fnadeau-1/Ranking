@@ -11,6 +11,19 @@ service cloud.firestore {
         && exists(/databases/$(database)/documents/rankers/$(request.auth.uid));
     }
 
+    // A signed-in user whose VERIFIED email was pre-authorized may self-claim
+    // ranker access on first sign-in — either a seeded owner email or an email
+    // an existing ranker invited via rankerInvites/{email}. This lets a ranker
+    // be added before they've ever signed in (we don't know their UID yet).
+    function isInvitedEmail() {
+      return request.auth != null
+        && request.auth.token.email_verified == true
+        && (
+          request.auth.token.email.lower() == 'christa.nadeau@outlook.com'
+          || exists(/databases/$(database)/documents/rankerInvites/$(request.auth.token.email.lower()))
+        );
+    }
+
     // An optional string field: either absent, or a string within maxLen. Used
     // for the customizable roster fields (grade/record/hometown/notes) so a
     // wrestler doc can carry them but isn't required to.
@@ -192,11 +205,31 @@ service cloud.firestore {
     match /rankers/{uid} {
       allow read: if request.auth != null && request.auth.uid == uid;
 
-      allow create, update: if isRanker()
+      // Create either as an existing ranker (adding anyone by UID) or as an
+      // invited user self-claiming their own doc.
+      allow create: if request.resource.data.addedBy == request.auth.uid
+        && request.resource.data.addedAt == request.time
+        && request.resource.data.keys().hasOnly(['addedAt', 'addedBy'])
+        && (isRanker() || (uid == request.auth.uid && isInvitedEmail()));
+
+      allow update: if isRanker()
         && request.resource.data.addedBy == request.auth.uid
         && request.resource.data.addedAt == request.time
         && request.resource.data.keys().hasOnly(['addedAt', 'addedBy']);
 
+      allow delete: if isRanker();
+    }
+
+    // Pre-authorized ranker emails (doc id = lowercased email). Rankers manage
+    // these; the isInvitedEmail() check above reads them via exists() so an
+    // invited user can self-claim on first sign-in. Not client-readable except
+    // by rankers (so the dashboard can list pending invites).
+    match /rankerInvites/{email} {
+      allow read: if isRanker();
+      allow create: if isRanker()
+        && request.resource.data.keys().hasOnly(['invitedBy', 'invitedAt'])
+        && request.resource.data.invitedBy == request.auth.uid
+        && request.resource.data.invitedAt == request.time;
       allow delete: if isRanker();
     }
 

@@ -63,12 +63,40 @@ const editDeleteBtn = document.getElementById("wrestler-edit-delete");
 
 const newRankerForm = document.getElementById("new-ranker-form");
 const rankerError = document.getElementById("ranker-error");
+const inviteRankerForm = document.getElementById("invite-ranker-form");
+const inviteRankerEmail = document.getElementById("invite-ranker-email");
+const inviteError = document.getElementById("invite-error");
+const inviteListEl = document.getElementById("invite-list");
 
 const newTeamForm = document.getElementById("new-team-form");
 const teamError = document.getElementById("team-error");
 const teamListEl = document.getElementById("team-list");
 const teamPublishToggle = document.getElementById("team-publish-toggle");
 const teamPublishStatus = document.getElementById("team-publish-status");
+const seedAaBtn = document.getElementById("seed-aa-teams-btn");
+const seedAaStatus = document.getElementById("seed-aa-status");
+
+// Current Montana Class AA wrestling schools — a one-click starting roster so
+// the ranker only has to fill in each team's points. Names can be edited or
+// removed afterward if the AA field changes.
+const MONTANA_AA_TEAMS = [
+  "Belgrade",
+  "Billings Senior",
+  "Billings Skyview",
+  "Billings West",
+  "Bozeman",
+  "Bozeman Gallatin",
+  "Butte",
+  "Great Falls High",
+  "Great Falls CMR",
+  "Helena",
+  "Helena Capital",
+  "Kalispell Flathead",
+  "Kalispell Glacier",
+  "Missoula Big Sky",
+  "Missoula Hellgate",
+  "Missoula Sentinel",
+];
 
 let allWrestlers = new Map();
 let allTeams = new Map(); // teamId -> {name, points}
@@ -141,7 +169,19 @@ onAuthStateChanged(auth, async (user) => {
     dashboardEl.style.display = "none";
     return;
   }
-  const snap = await getDoc(doc(db, "rankers", user.uid));
+  let snap = await getDoc(doc(db, "rankers", user.uid));
+  if (!snap.exists()) {
+    // This account may have been pre-authorized by email (rankerInvites or a
+    // seeded owner email). Try to self-claim ranker access; the rules only
+    // allow it when the verified email was actually invited.
+    try {
+      await setDoc(doc(db, "rankers", user.uid),
+          {addedBy: user.uid, addedAt: serverTimestamp()});
+      snap = await getDoc(doc(db, "rankers", user.uid));
+    } catch (e) {
+      // Not invited — fall through to the not-ranker notice.
+    }
+  }
   if (!snap.exists()) {
     notRankerEl.style.display = "";
     dashboardEl.style.display = "none";
@@ -213,6 +253,27 @@ function initDashboard() {
       teamPublishStatus.textContent = published ?
         "Live on the Teams page" : "Hidden from the public";
     }
+  });
+
+  // Pending email invites (rankers only can read these).
+  onSnapshot(collection(db, "rankerInvites"), (snap) => {
+    if (!inviteListEl) return;
+    const emails = snap.docs.map((d) => d.id).sort();
+    inviteListEl.innerHTML = emails.map((email) => `
+      <li data-invite="${escapeHtml(email)}">
+        ${escapeHtml(email)} <span class="hint">invited — pending first sign-in</span>
+        <button type="button" class="link-btn" data-remove-invite="${escapeHtml(email)}">Remove</button>
+      </li>`).join("") ||
+      '<li class="empty">No pending email invites.</li>';
+    inviteListEl.querySelectorAll("[data-remove-invite]").forEach((btn) => {
+      btn.addEventListener("click", async () => {
+        try {
+          await deleteDoc(doc(db, "rankerInvites", btn.dataset.removeInvite));
+        } catch (err) {
+          inviteError.textContent = err.message || "Couldn't remove invite.";
+        }
+      });
+    });
   });
 }
 
@@ -1180,6 +1241,28 @@ newRankerForm.addEventListener("submit", async (e) => {
   }
 });
 
+if (inviteRankerForm) {
+  inviteRankerForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    inviteError.textContent = "";
+    const email = inviteRankerEmail.value.trim().toLowerCase();
+    // Basic sanity check; Firestore doc ids can't contain "/".
+    if (!email || !email.includes("@") || email.includes("/")) {
+      inviteError.textContent = "Enter a valid email address.";
+      return;
+    }
+    try {
+      await setDoc(doc(db, "rankerInvites", email), {
+        invitedBy: auth.currentUser.uid,
+        invitedAt: serverTimestamp(),
+      });
+      inviteRankerForm.reset();
+    } catch (err) {
+      inviteError.textContent = err.message || "Couldn't add invite.";
+    }
+  });
+}
+
 // --- Team rankings ---
 // Teams are ranked by their free-form `points` field (highest first); ties and
 // blank/non-numeric points fall back to alphabetical. Rows are always editable
@@ -1279,6 +1362,35 @@ if (teamPublishToggle) {
       // Revert the visual toggle if the write failed.
       teamPublishToggle.checked = !published;
       teamError.textContent = err.message || "Couldn't update visibility.";
+    }
+  });
+}
+
+if (seedAaBtn) {
+  seedAaBtn.addEventListener("click", async () => {
+    seedAaBtn.disabled = true;
+    seedAaStatus.textContent = "Adding…";
+    // Skip any team already on the roster (case-insensitive by name).
+    const existing = new Set(
+        [...allTeams.values()].map((t) => (t.name || "").trim().toLowerCase()));
+    let added = 0;
+    try {
+      for (const name of MONTANA_AA_TEAMS) {
+        if (existing.has(name.toLowerCase())) continue;
+        await addDoc(collection(db, "teams"), {
+          name,
+          createdBy: auth.currentUser.uid,
+          createdAt: serverTimestamp(),
+        });
+        added++;
+      }
+      seedAaStatus.textContent = added ?
+        `Added ${added} team${added === 1 ? "" : "s"} — now fill in each team's points.` :
+        "All Montana AA teams are already on the list.";
+    } catch (err) {
+      seedAaStatus.textContent = err.message || "Couldn't add teams.";
+    } finally {
+      seedAaBtn.disabled = false;
     }
   });
 }
