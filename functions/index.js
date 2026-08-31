@@ -13,6 +13,9 @@ const admin = require("firebase-admin");
 admin.initializeApp();
 const db = admin.firestore();
 
+// Firestore caps a single batched write at 500 operations.
+const BATCH_LIMIT = 500;
+
 // App Check enforcement is turned on at the App Check console once the site is
 // deployed (see README); flip this to true there and here together.
 const CALLABLE_OPTS = {enforceAppCheck: false};
@@ -387,6 +390,62 @@ exports.submitUserRanking = onCall(CALLABLE_OPTS, async (request) => {
     order,
     updatedAt: admin.firestore.FieldValue.serverTimestamp(),
   });
+
+  return {ok: true};
+});
+
+/**
+ * Deletes every document a query returns, in batches of BATCH_LIMIT so we stay
+ * under Firestore's 500-writes-per-batch limit even for a heavy user.
+ * @param {FirebaseFirestore.Query} query A query whose matches should be
+ *     deleted.
+ */
+async function deleteQueryInBatches(query) {
+  // eslint-disable-next-line no-constant-condition
+  while (true) {
+    const snap = await query.limit(BATCH_LIMIT).get();
+    if (snap.empty) return;
+    const batch = db.batch();
+    snap.docs.forEach((docSnap) => batch.delete(docSnap.ref));
+    await batch.commit();
+    // A full page likely means more remain; keep going until a short page.
+    if (snap.size < BATCH_LIMIT) return;
+  }
+}
+
+// Lets a signed-in user permanently delete their own account: their Firestore
+// footprint (comments, votes, fan rankings, per-week counters, rate-limit
+// state, and ranker access if any) plus the Firebase Auth record itself. Run
+// server-side with the Admin SDK because votes/userRankings/rateLimits/
+// commentCounts are all client-write-denied, and deleting the Auth user needs
+// admin privileges. The user only deletes THEIR OWN account — uid comes from
+// the verified auth token, never from client input.
+exports.deleteMyAccount = onCall(CALLABLE_OPTS, async (request) => {
+  const auth = request.auth;
+  if (!auth) {
+    throw new HttpsError("unauthenticated", "Sign in to delete your account.");
+  }
+  const uid = auth.uid;
+
+  // Remove the user's own content and any collections keyed to their uid.
+  await deleteQueryInBatches(
+      db.collection("comments").where("userId", "==", uid));
+  await deleteQueryInBatches(
+      db.collection("votes").where("userId", "==", uid));
+  await deleteQueryInBatches(
+      db.collection("userRankings").where("userId", "==", uid));
+  await deleteQueryInBatches(
+      db.collection("commentCounts").where("userId", "==", uid));
+
+  // Single-doc, uid-keyed records: rate-limit state and ranker access. Deleting
+  // a non-existent doc is a no-op, so no existence check is needed.
+  await db.collection("rateLimits").doc(uid).delete();
+  await db.collection("rankers").doc(uid).delete();
+
+  // Finally, remove the Auth account. Do this last so a failure above leaves
+  // the account intact and retryable rather than orphaning a signed-in user
+  // with half-deleted data.
+  await admin.auth().deleteUser(uid);
 
   return {ok: true};
 });

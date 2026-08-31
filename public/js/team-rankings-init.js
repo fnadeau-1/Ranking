@@ -6,6 +6,9 @@ const titleEl = document.getElementById("team-title");
 const subEl = document.getElementById("team-sub");
 const standingsEl = document.getElementById("team-standings");
 
+// Only the top teams are ever shown publicly — a flat list, no "show more".
+const MAX_PUBLIC_TEAMS = 6;
+
 let teams = [];
 let published = false;
 let teamsLoaded = false;
@@ -38,7 +41,7 @@ function render() {
     return;
   }
   subEl.textContent = "Montana teams, ranked by points.";
-  standingsEl.innerHTML = sortedTeams().map((t, i) => {
+  standingsEl.innerHTML = sortedTeams().slice(0, MAX_PUBLIC_TEAMS).map((t, i) => {
     const pts = (t.points || "").trim();
     const ptsHtml = pts ?
       `<span class="team-points">${escapeHtml(pts)} pts</span>` : "";

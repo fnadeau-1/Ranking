@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+
+# Admin dashboard and per-user account pages — no value to search engines.
+Disallow: /rank
+Disallow: /settings
+Disallow: /sign-in
+
+Sitemap: https://rankings-d6214.web.app/sitemap.xml

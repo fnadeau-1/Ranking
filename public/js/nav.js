@@ -1,4 +1,4 @@
-const {auth, db, doc, getDoc, onAuthStateChanged, signOut} = window.rankingApp;
+const {auth, db, doc, getDoc, onAuthStateChanged} = window.rankingApp;
 
 const authSlot = document.getElementById("auth-slot");
 const rankLink = document.getElementById("rank-link");
@@ -19,14 +19,10 @@ function renderSignedOut() {
 }
 
 function renderSignedIn() {
+  // Sign out (and account deletion) now live on the Settings page, so the nav
+  // only links there — one entry point, less clutter.
   if (authSlot) {
-    authSlot.innerHTML =
-      '<a href="settings">Settings</a>' +
-      '<a href="#" id="sign-out-link">Sign out</a>';
-    document.getElementById("sign-out-link").addEventListener("click", (e) => {
-      e.preventDefault();
-      signOut(auth);
-    });
+    authSlot.innerHTML = '<a href="settings">Settings</a>';
   }
 }
 

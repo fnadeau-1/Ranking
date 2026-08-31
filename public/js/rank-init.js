@@ -1277,9 +1277,13 @@ function sortedTeamEntries() {
 
 function renderTeams() {
   if (!teamListEl) return;
-  // Don't rebuild while a ranker is mid-edit in one of the inputs (a snapshot
-  // firing from their own save would otherwise wipe focus/typing).
-  if (document.activeElement && teamListEl.contains(document.activeElement)) {
+  // Don't rebuild while a ranker is mid-edit in one of the text inputs (a
+  // snapshot firing from their own save would otherwise wipe focus/typing).
+  // Scope this to inputs only — a focused Remove button must NOT block the
+  // re-render, or the deleted row would linger on screen and the button would
+  // look broken even though the delete succeeded.
+  const active = document.activeElement;
+  if (active && active.tagName === "INPUT" && teamListEl.contains(active)) {
     return;
   }
   const entries = sortedTeamEntries();
@@ -1317,7 +1321,8 @@ function renderTeams() {
 
   teamListEl.querySelectorAll("[data-remove-team]").forEach((btn) => {
     btn.addEventListener("click", async () => {
-      if (!confirm("Remove this team from the team ranking?")) return;
+      // No confirm dialog — removing a team is cheap and easily re-added, so
+      // just do it on click.
       try {
         await deleteDoc(doc(db, "teams", btn.dataset.removeTeam));
       } catch (err) {

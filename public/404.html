@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Team Rankings | Montana Wrestling Rankings</title>
-    <meta name="description" content="Montana high school wrestling team rankings, ranked by points.">
+    <title>Page not found | Montana Wrestling Rankings</title>
+    <meta name="robots" content="noindex">
     <link rel="icon" href="favicon.svg">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -26,7 +26,7 @@
             <nav class="nav-links" id="nav-links">
                 <a href="/">Home</a>
                 <a href="rankings">Rankings</a>
-                <a href="team-rankings" class="active">Teams</a>
+                <a href="team-rankings">Teams</a>
                 <a href="how-it-works">How It Works</a>
                 <a href="about">About</a>
                 <a href="archive">Archive</a>
@@ -36,16 +36,19 @@
         </div>
     </header>
 
-    <main class="container section">
-        <div class="section-head">
-            <span class="eyebrow">Team rankings</span>
-            <h1 id="team-title">Team Rankings</h1>
-            <p id="team-sub">Montana teams, ranked by points.</p>
+    <main class="container" style="text-align:center; padding-top:var(--space-8); padding-bottom:var(--space-8);">
+        <div class="page-head" style="align-items:center;">
+            <span class="eyebrow">Error 404</span>
+            <h1>Page not found</h1>
         </div>
-
-        <ol class="ranking-list team-standings" id="team-standings">
-            <li class="empty">Loading…</li>
-        </ol>
+        <p class="prose" style="max-width:52ch; margin:0 auto var(--space-5);">
+            The page you're looking for got pinned. It may have moved, or the
+            link might be wrong. Let's get you back to the mat.
+        </p>
+        <div style="display:flex; gap:var(--space-2); justify-content:center; flex-wrap:wrap;">
+            <a class="btn btn-primary" href="/">Back to home</a>
+            <a class="btn btn-ghost" href="rankings">See the rankings</a>
+        </div>
     </main>
 
     <footer class="site-footer">
@@ -67,6 +70,5 @@
 
     <script type="module" src="js/firebase-init.js"></script>
     <script type="module" src="js/nav.js"></script>
-    <script type="module" src="js/team-rankings-init.js"></script>
 </body>
 </html>

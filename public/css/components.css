@@ -1340,6 +1340,24 @@ select:focus, input:focus, textarea:focus {
   background: var(--color-surface);
 }
 
+/* Destructive action (e.g. delete account) — outlined until hover so it never
+   competes with the primary button, then fills red to confirm the weight. */
+.btn-danger {
+  background: transparent;
+  color: var(--color-danger);
+  border: 1.5px solid var(--color-danger);
+}
+
+.btn-danger:hover {
+  background: var(--color-danger);
+  color: #fff;
+}
+
+.btn-danger:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
 .btn-ghost-light {
   background: rgba(255, 255, 255, 0.08);
   color: #fff;
